@@ -1,11 +1,22 @@
 ---
 name: commit
 description: Summarize uncommitted changes as conventional-commit bullets and propose a commit message. Use when the user asks to commit or wants a commit message.
+argument-hint: "[-y]"
 ---
 
 # Commit
 
 Summarize the working tree, agree on scope with the user, propose a message, and commit only after they approve.
+
+## Auto-approve with `-y`
+
+If the user passes `-y` (`/commit -y`, or "commit -y"), don't stop to ask anything:
+
+- **Scope:** commit only the files this thread changed. If this thread changed nothing, commit everything. Leave out files with hunks from both groups.
+- **Message:** show the summary and the message, then commit right away without waiting for approval. Make one commit, even if the changes could be split.
+- **Report:** after committing, list any files you left out so the user can commit them separately.
+
+Everything else in this skill still applies.
 
 ## 1. Gather the changes
 
@@ -81,7 +92,7 @@ If the changes are unrelated, for example a feature plus an unrelated dependency
 
 ## 5. Commit on approval
 
-Wait for the user to approve or edit the message. Then:
+Wait for the user to approve or edit the message (skip this with `-y`). Then:
 
 - Stage exactly the agreed files: `git add -- <paths>`. Use `git add -A` only when the user chose "Everything".
 - If files outside the agreed scope were already staged, unstage them first with `git restore --staged -- <paths>`, and tell the user you did.
