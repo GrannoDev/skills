@@ -16,7 +16,6 @@ git status --porcelain=v1
 git diff --staged
 git diff
 git ls-files --others --exclude-standard
-git log --oneline -15
 ```
 
 Read untracked files that look like source. Skip lockfiles, build output and binaries; note that they changed and move on.
@@ -60,7 +59,7 @@ Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `build`, `ci`
 
 ## 4. Propose the commit message
 
-Pick the type of the most significant change (`feat` > `fix` > the rest). Check `git log` for the repo's own habits (scopes, capitalization, ticket prefixes) and follow them.
+Pick the type of the most significant change (`feat` > `fix` > the rest). Always use this format, whatever earlier commits in the repo look like.
 
 ```
 feat(reports): add CSV export
@@ -73,9 +72,10 @@ current view as CSV.
 - chore: bump papaparse to 5.4.1
 ```
 
-- Subject: `type(scope): summary`. Use the imperative mood, lowercase after the colon, no trailing period, 72 characters or fewer. Leave out the scope if the change spans the whole repo.
+- Subject: `type(scope): summary`. Use the imperative mood, lowercase after the colon, no trailing period, 72 characters or fewer.
+- Scope: one lowercase word naming the feature, module or top-level folder the change is about (`auth`, `reports`, `api`). Leave it out if the change spans the whole repo.
 - Body: say why the change was made and what it does, wrapped at 72 characters. Add the smaller changes as bullets.
-- Footer: `BREAKING CHANGE: ...` or issue references when they apply.
+- Footer: `BREAKING CHANGE: ...` when something breaks, and `Refs: <issue>` only when the user names an issue.
 
 If the changes are unrelated, for example a feature plus an unrelated dependency bump, suggest splitting them into separate commits and propose a message for each.
 
