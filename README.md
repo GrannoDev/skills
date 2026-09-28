@@ -20,6 +20,7 @@ npx skills add GrannoDev/skills --skill <name>
 | --- | --- |
 | [break-ui](skills/break-ui/SKILL.md) | Sends agents to break a UI in a browser, simulator or emulator and reports ranked, reproduced bugs. |
 | [commit](skills/commit/SKILL.md) | Summarizes changes as conventional-commit bullets and proposes a commit message. |
+| [use-tdd](skills/use-tdd/SKILL.md) | Fixes a bug test-first: a focused regression test that fails before the fix and passes after. |
 
 ## Adding a skill
 
