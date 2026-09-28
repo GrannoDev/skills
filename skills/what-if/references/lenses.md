@@ -2,6 +2,8 @@
 
 Each section is one way to look at a feature. Turn every bullet that fits into a concrete "What if…?" about this feature, using its real inputs, fields and screens. Skip bullets that don't fit.
 
+Concrete frontend and backend checks, such as long text, request errors, double submits and auth, live in [checklist.md](checklist.md) and aren't repeated here.
+
 ## Boundaries
 
 - Zero, one, and many.
@@ -15,16 +17,11 @@ Each section is one way to look at a feature. Turn every bullet that fits into a
 
 - A field that's missing, null, or undefined.
 - The wrong type: a string where a number is expected, an object where a list is expected.
-- Whitespace only, and leading or trailing spaces.
-- Emoji, combining characters, right-to-left text, and mixed scripts.
-- Very long values, and a single very long word.
 - Duplicates, and the same value with different casing.
 - Items in an unexpected order.
-- Extra fields the code doesn't know about.
 
 ## Time
 
-- Timezones: the user, the server and the database in different zones.
 - Daylight saving changes: the missing hour and the repeated hour.
 - 29 February, month ends, and year ends.
 - Midnight, and the exact instant something expires or starts.
@@ -43,35 +40,20 @@ Each section is one way to look at a feature. Turn every bullet that fits into a
 
 ## Concurrency
 
-- The same request submitted twice in quick succession.
-- Two users changing the same record.
 - Reading data that changed since it was loaded.
 - Events or messages arriving out of order, twice, or not at all.
 - A background job running while the user edits the same data.
 
 ## Dependency failure
 
-- A dependency that times out, is slow, or is down.
-- An error response (4xx, 5xx) or a malformed response.
-- Rate limits and quota errors.
+- Quota errors, such as a storage or billing limit.
 - Disk full, or a file missing or locked.
-- A dependency that succeeds but returns empty or partial data.
-- A failure after some side effects already happened (email sent, card charged).
+- A request that gets slow enough to hit a timeout.
 
 ## Auth and security
 
-- Not logged in, or the session expires mid-flow.
-- Another user's or tenant's ID in the request.
 - A role or permission that changes while the user is in the flow.
 - User input that ends up in SQL, HTML, shell commands, file paths or templates.
-- Secrets or personal data that could leak into logs, errors or URLs.
-
-## Scale
-
-- 10,000 items instead of 10.
-- A very large file or payload.
-- A request that gets slow enough to hit a timeout.
-- Many users hitting the feature at once.
 
 ## Money and numbers
 
@@ -86,4 +68,3 @@ Each section is one way to look at a feature. Turn every bullet that fits into a
 - A feature flag on, off, or changing mid-session.
 - A missing or invalid config value.
 - Different locales, languages and number formats.
-- An old client talking to a new server, or the other way round.

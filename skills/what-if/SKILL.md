@@ -39,6 +39,8 @@ Ask the user to confirm or correct the contract before going further. Every ques
 
 Read [references/lenses.md](references/lenses.md). Run the feature through each lens and write down every case that could plausibly happen. Skip lenses that don't apply.
 
+Then go through [references/checklist.md](references/checklist.md) for every feature: the Frontend list if it has a UI, the Backend list if it runs on a server, and both if it does both. For anything else, such as a library or a CLI, take the items from either list that fit. Add every item that isn't already on your list.
+
 For each case, work out from the code what happens now and whether a test covers it. Rank the cases by likelihood × impact: cases that are likely and would lose data, money or access come first.
 
 Keep this list to yourself. The user sees it one question at a time.
@@ -75,6 +77,7 @@ Give every case one status:
 - 🔴 **Bug:** the code does something other than what the user expects.
 - ⚪ **Out of scope:** the user decided it doesn't matter.
 - ❓ **Open:** the user isn't sure. This is usually a missing requirement, not a missing test.
+- 🔵 **Manual:** an automated test can't cover it well, so it needs checking by hand. Examples: zoom, a throttled connection, reduced motion, disabled hardware acceleration. If the code clearly gets it wrong, mark it 🔴 instead.
 
 Show the ledger every 5 questions or so, and whenever the user asks. Keep it in the chat; don't write it to a file.
 
@@ -85,7 +88,7 @@ Use this format:
 ```
 ## What if: <feature>
 
-<n> cases: <n> ✅, <n> 🟡, <n> 🔴, <n> ⚪, <n> ❓
+<n> cases: <n> ✅, <n> 🟡, <n> 🔴, <n> 🔵, <n> ⚪, <n> ❓
 
 | # | What if… | Expected | Now | Status |
 |---|----------|----------|-----|--------|
@@ -97,6 +100,7 @@ Then list:
 
 - **Bugs:** the 🔴 cases, one line each with the behavior the user expects. Suggest running `/use-tdd` on each one so it gets a failing test before the fix.
 - **Tests to write:** the 🟡 cases as test names, grouped by test file or suite. Name each test after its scenario ("honors a code that expires mid-checkout").
+- **Manual checks:** the 🔵 cases as steps to do by hand, each with what to look for ("Zoom to 200%: the submit button stays on screen with no horizontal scrolling").
 - **Open questions:** the ❓ cases, worded so the user can take them to whoever owns the requirement.
 
 Ask whether the user wants you to write the tests. Don't start on your own.

@@ -45,13 +45,15 @@ Watch for: lost input, wrong screen after returning, steps that can be skipped, 
 ## Layout and viewport
 
 - Narrow widths (320px), wide (2560px), and very short heights.
-- Browser zoom at 200% and 400%.
+- Browser zoom at 50%, 200% and 400% (400% is the WCAG reflow check).
 - Long names, titles and numbers everywhere they appear (reuse long values from the Input angle).
 - Lists with zero, one and hundreds of items.
 - Dark mode, and a right-to-left language if the app supports one.
+- Reduced motion turned on (emulate `prefers-reduced-motion` in the browser's dev tools, or the Reduce Motion setting on the device).
+- Hardware acceleration disabled in the browser settings, if the tool allows it.
 - On mobile: the largest Dynamic Type or font size, landscape, small devices (iPhone SE size), and the on-screen keyboard covering inputs.
 
-Watch for: overlapping or cut-off content, horizontal scrolling, buttons pushed off screen, text unreadable against its background, and controls you can't reach.
+Watch for: overlapping or cut-off content, horizontal scrolling, buttons pushed off screen, text unreadable against its background, controls you can't reach, animations that still play with reduced motion on, and effects that stutter or break without hardware acceleration.
 
 ## Failure paths
 
