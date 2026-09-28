@@ -11,7 +11,17 @@ Merge into the production branch, bump the version, tag, push, and bring develop
 
 The user can start from any branch: the production branch, `develop`, or a feature or bug branch. A successful release always ends on `develop`.
 
-If any command fails (a merge conflict, a rejected push, a failing hook), stop where you are, show the output, and say which step you reached. Don't reset, force, retry or switch branches on your own.
+If any command fails (a merge conflict other than the version, a rejected push, a failing hook), stop where you are, show the output, and say which step you reached. Don't reset, force, retry or switch branches on your own.
+
+## Version conflicts
+
+Both merges (steps 2 and 6) often conflict on the pom version. Resolve these yourself when every conflicted hunk is the project version: the root `<version>`, or a module's `<parent><version>` pointing at the root project.
+
+- In each hunk, keep the side named in that step. The version gets set right afterwards anyway.
+- Edit the conflict markers by hand. Don't use `git checkout --ours/--theirs` on the whole file, because that throws away the other side's non-conflicting changes.
+- Run `git add` on the resolved poms and `git commit --no-edit` to finish the merge. Tell the user in one line that you resolved a version conflict.
+
+For any other conflict, such as dependency versions, other pom changes or other files, stop and hand over to the user.
 
 ## 1. Prepare
 
@@ -47,20 +57,20 @@ git checkout <prod>
 git pull --ff-only
 ```
 
-Before merging, read the project version from the root `pom.xml` (the project's own `<version>`, not the `<parent>` one). Step 3 compares it with the source's version. Then merge:
+Before merging, read the project version from the root `pom.xml` (the project's own `<version>`, not the `<parent>` one). Read the source's version too, with `git show <source>:pom.xml`. Step 3 compares them. Then merge:
 
 ```bash
 git merge --no-edit <source>
 ```
 
-If the checkout refuses because of uncommitted changes, or the merge conflicts, stop and hand over to the user.
+If the checkout refuses because of uncommitted changes, stop and hand over to the user. If the merge conflicts on the version, resolve it as described in [Version conflicts](#version-conflicts), keeping the source side.
 
 ## 3. Choose the version
 
-Compare the two versions, both without `-SNAPSHOT`:
+Compare the two versions you read in step 2, both without `-SNAPSHOT`:
 
-- **Production:** the version you read before the merge.
-- **Source:** the root `pom.xml` version after the merge.
+- **Production:** the production branch's version before the merge.
+- **Source:** the source branch's version.
 
 **If they match** (for example master `1.2.3`, develop `1.2.3-SNAPSHOT`), bump from that version.
 
@@ -142,6 +152,11 @@ git push origin release/<version>
 git checkout develop
 git pull --ff-only
 git merge --no-edit <prod>
+```
+
+If the merge conflicts on the version, resolve it as described in [Version conflicts](#version-conflicts), keeping the production side. Then:
+
+```bash
 <mvn> -q versions:set -DnewVersion=<version>-SNAPSHOT -DgenerateBackupPoms=false
 git add -- '*pom.xml'
 git commit -m "chore(release): <version>-SNAPSHOT"
