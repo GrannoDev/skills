@@ -22,6 +22,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [blueprint-build](skills/blueprint-build/SKILL.md) | Builds an approved blueprint tests-first and summarizes how it works, why, and which files changed. |
 | [blueprint-clean](skills/blueprint-clean/SKILL.md) | Deletes finished blueprints and lists the ones still in progress. |
 | [break-ui](skills/break-ui/SKILL.md) | Sends agents to break a UI in a browser, simulator or emulator and reports ranked, reproduced bugs. |
+| [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Summarizes changes as conventional-commit bullets and proposes a commit message. |
 | [use-tdd](skills/use-tdd/SKILL.md) | Fixes a bug test-first: a focused regression test that fails before the fix and passes after. |
 | [what-if](skills/what-if/SKILL.md) | Walks through a feature's edge cases one question at a time and ends with a test plan. |
