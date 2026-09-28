@@ -18,7 +18,7 @@ npx skills add GrannoDev/skills --skill <name>
 
 | Skill | Description |
 | --- | --- |
-| [commit](skills/commit/SKILL.md) | Summarizes your changes as conventional-commit bullets, asks whether to commit everything or only the current thread's changes, and proposes a commit message. |
+| [commit](skills/commit/SKILL.md) | Summarizes changes as conventional-commit bullets and proposes a commit message. |
 
 ## Adding a skill
 

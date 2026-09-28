@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Analyze the repo's uncommitted changes, summarize them as conventional-commit bullets (feat, fix, chore, ...), and propose a commit message with a description. Asks whether to commit everything or only the changes from the current thread. Use when the user says "commit", "/commit", "commit this", or asks for a commit message.
+description: Summarize uncommitted changes as conventional-commit bullets and propose a commit message. Use when the user asks to commit or wants a commit message.
 ---
 
 # Commit
