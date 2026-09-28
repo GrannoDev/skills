@@ -45,6 +45,11 @@ Tell the user the plan in one line, for example `Releasing develop → master`.
 ```bash
 git checkout <prod>
 git pull --ff-only
+```
+
+Before merging, read the project version from the root `pom.xml` (the project's own `<version>`, not the `<parent>` one). Step 3 compares it with the source's version. Then merge:
+
+```bash
 git merge --no-edit <source>
 ```
 
@@ -52,13 +57,30 @@ If the checkout refuses because of uncommitted changes, or the merge conflicts, 
 
 ## 3. Choose the version
 
-Read the project version from the root `pom.xml` (the project's own `<version>`, not the `<parent>` one). Drop any `-SNAPSHOT` suffix to get the base version, then state it and ask which bump to make. Use a question tool if you have one, with the options in this order:
+Compare the two versions, both without `-SNAPSHOT`:
+
+- **Production:** the version you read before the merge.
+- **Source:** the root `pom.xml` version after the merge.
+
+**If they match** (for example master `1.2.3`, develop `1.2.3-SNAPSHOT`), bump from that version.
+
+**If they differ** (for example master `1.2.3`, develop `1.2.4-SNAPSHOT`), show both and ask which one to bump from:
 
 ```
-Current version: 1.4.2-SNAPSHOT (base 1.4.2)
+The versions don't match: master is 1.2.3, develop is 1.2.4-SNAPSHOT.
+Which version should the bump start from?
 
-- Patch → 1.4.3
-- Minor → 1.5.0
+- master (1.2.3)
+- develop (1.2.4)
+```
+
+Then ask which bump to make. Use a question tool if you have one, with the options in this order:
+
+```
+Bumping from 1.2.3
+
+- Patch → 1.2.4
+- Minor → 1.3.0
 - Major → 2.0.0
 ```
 
