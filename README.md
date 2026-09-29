@@ -24,6 +24,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [break-ui](skills/break-ui/SKILL.md) | Sends agents to break a UI in a browser, simulator or emulator and reports ranked, reproduced bugs. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Summarizes changes as conventional-commit bullets and proposes a commit message. |
+| [setup-project](skills/setup-project/SKILL.md) | Interviews you about how to run the app, verify changes (auth and test accounts) and which tests to write, then saves it to AGENTS.md for future agent sessions. |
 | [use-tdd](skills/use-tdd/SKILL.md) | Fixes a bug test-first: a focused regression test that fails before the fix and passes after. |
 | [what-if](skills/what-if/SKILL.md) | Walks through a feature's edge cases one question at a time and ends with a test plan. |
 
