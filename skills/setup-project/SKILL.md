@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # Setup Project
 
-Find out how to run this project, how to check that a change works, and which tests the user wants. Save the answers to the project's `AGENTS.md` so later sessions, and skills like `/break-ui`, `/use-tdd` and `/blueprint-build`, can start the app, log in and run the right tests without asking again.
+Find out how to run this project, how to check that a change works, and which tests the user wants. Save the answers to the project's `AGENTS.md` so later sessions, and skills like `/start-project`, `/stop-project`, `/break-ui`, `/use-tdd` and `/blueprint-build`, can start the app, log in and run the right tests without asking again.
 
 Keep it fast: detect everything you can, fill in the gaps with sensible defaults, then walk the user through three sections (running the app, verifying changes, tests). For each one they either confirm your draft and you move on, or pick "Change" and you question them about just that section.
 

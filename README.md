@@ -25,6 +25,8 @@ npx skills add GrannoDev/skills --skill <name>
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Summarizes changes as conventional-commit bullets and proposes a commit message. |
 | [setup-project](skills/setup-project/SKILL.md) | Drafts how to run the app, verify changes (auth and test accounts) and which tests to write, has you confirm or change each section, then saves it to AGENTS.md. |
+| [start-project](skills/start-project/SKILL.md) | Starts the project's services in order from the `/setup-project` setup, waits until each is ready, and reports URLs and logs. |
+| [stop-project](skills/stop-project/SKILL.md) | Stops every service the project depends on, in reverse order, and keeps all data. |
 | [use-tdd](skills/use-tdd/SKILL.md) | Fixes a bug test-first: a focused regression test that fails before the fix and passes after. |
 | [what-if](skills/what-if/SKILL.md) | Walks through a feature's edge cases one question at a time and ends with a test plan. |
 
