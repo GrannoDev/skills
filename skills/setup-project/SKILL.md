@@ -13,9 +13,11 @@ Keep it fast: detect everything you can, fill in the gaps with sensible defaults
 
 ## Asking questions
 
+**Show before you ask.** Never ask the user to confirm or change something they can't see. Before every question, write the section you're asking about in your message as a markdown snippet, then ask in a separate step. The same goes for follow-up questions after "Change": show the current draft of the parts you're asking about first. A question like "Confirm the running-the-app setup?" with no snippet above it is a bug.
+
 If you have a question tool (such as `AskUserQuestion`), use it for every question in this skill instead of asking in plain text:
 
-- For each section's confirmation, ask one question with two options: "Confirm (Recommended)" and "Change".
+- For each section's confirmation, ask one question with two options: "Confirm (Recommended)" and "Change". Name the section in the question ("Running the app: confirm or change?"). If the tool supports option previews (the `preview` field in `AskUserQuestion`), also put the section's snippet in the "Confirm" option's preview.
 - When the user picks "Change", group the follow-up questions into one call, up to the tool's limit (4 for `AskUserQuestion`).
 - Offer what you detected as the options and put the likeliest first, marked "(Recommended)". The user can always pick "Other" and type an answer.
 - Use multi-select when several answers can be true, such as which parts of a section to change or which services to run.
@@ -26,7 +28,7 @@ If you don't have a question tool, ask in plain text: "Confirm or change?" for e
 
 ## Quick mode with `-q`
 
-If the user passes `-q` (`/setup-project -q`), skip the per-section confirmations. Show the whole draft once and ask the user to confirm or change it. Still ask for test credentials if the app has auth and the repo has none. You can't guess them.
+If the user passes `-q` (`/setup-project -q`), skip the per-section confirmations. Show the whole draft once as a markdown snippet and then ask the user to confirm or change it. Still ask for test credentials if the app has auth and the repo has none. You can't guess them.
 
 Everything else in this skill still applies.
 
@@ -58,8 +60,22 @@ Don't ask anything yet.
 
 Go through the sections in order. For each one:
 
-1. Show the draft of that section, short enough to read at a glance, with *(assumed)* items visible.
-2. Ask: confirm or change?
+1. Show the draft of that section in your message as a markdown snippet: a `###` heading with the section name, then its parts as a short list or table, with *(assumed)* items visible. Keep it short enough to read at a glance. Example:
+
+   ```markdown
+   ### Running the app
+
+   | Service | Start | Ready when | URL |
+   | --- | --- | --- | --- |
+   | Postgres | `docker compose up -d postgres` | port 5432 open | localhost:5432 |
+   | Backend | `./mvnw spring-boot:run` (`backend/`) | `/actuator/health` is UP | localhost:8080 |
+
+   - **Who starts it:** the agent *(assumed)*
+   - **Data:** Flyway runs on startup; reset with `docker compose down -v`
+   - **Off-limits:** production and shared environments *(assumed)*
+   ```
+
+2. Only after the snippet is shown, ask: confirm or change?
 3. **Confirm:** move on to the next section.
 4. **Change:** ask which parts to change (multi-select from the section's parts below), then question the user about only those parts. Show the updated section and ask confirm or change again.
 
