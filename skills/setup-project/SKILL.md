@@ -48,6 +48,7 @@ Fill in every item in the three sections below, using [references/setup-template
 
 - The agent starts the services itself, in dependency order.
 - A change is done when it builds and the existing test suites pass.
+- UI changes are checked in the harness's built-in browser, or the iOS Simulator or Android emulator for a mobile app.
 - The agent writes new tests of the kinds the project already has, following the existing tests' style.
 - Nothing is off-limits beyond production and shared environments.
 
@@ -76,7 +77,8 @@ The services to run, in start order. For a typical stack: Keycloak container, Po
 
 Parts:
 
-- **Done checks:** the exact build, lint, format, type check and test commands that must pass, plus any manual check in the browser.
+- **Done checks:** the exact build, lint, format, type check and test commands that must pass.
+- **UI verification:** how the agent checks a UI change by using the app. The default is whatever the harness comes with: its built-in browser for a web app, or the iOS Simulator or Android emulator for a mobile app. Other options: the user's own browser through an extension (it has their real logins, so be careful), browser automation such as a Playwright MCP server or Playwright scripts, only the end-to-end tests, or the user checks it by hand. Also pin down when to do it (after every UI change, or only when asked) and the fallback if the preferred tool isn't available in a session.
 - **Auth type:** none, email and password on the app's own form, a Keycloak or other OIDC login page, SSO through Google or Microsoft, a magic link or email code, MFA or one-time codes, API keys, or basic auth.
 - **Roles:** which roles matter (admin, regular user, read-only), one test account per role.
 - **API access:** how to get a token for calling the backend directly, such as a Keycloak password grant against `/realms/<realm>/protocol/openid-connect/token` with a given client. Check in the realm config that the client allows it.
@@ -114,7 +116,7 @@ Once all three sections are confirmed, write them. Drop the *(assumed)* marks on
 Offer to prove the setup works. If the user agrees:
 
 1. Start each service in order, or check it's running, and wait for its ready check.
-2. Log in with each test account, through the UI if you have a browser tool and through the token call if there is one.
+2. Log in with each test account, through the UI using the chosen UI verification method and through the token call if there is one.
 3. Run one test of each kind the user wants, using the single-test command.
 4. Run the done checks.
 

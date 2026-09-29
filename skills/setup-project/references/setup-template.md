@@ -30,7 +30,9 @@ A change is done when these pass:
 1. `<build command>`
 2. `<lint / format / type check command>`
 3. `<tests that must pass>`
-4. <manual check, such as "open the changed screen in the browser and exercise it">
+4. UI changes are checked as described under UI verification
+
+UI verification: <the harness's built-in browser / iOS Simulator / Android emulator / …>, <after every UI change / only when asked>. Open the changed screen, exercise it, and check the console for errors. If it isn't available: <fallback, such as Playwright scripts or asking the user>.
 
 ### Auth
 
