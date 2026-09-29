@@ -1,137 +1,59 @@
 ---
 name: break-ui
-description: Send agents to break a UI in a browser, iOS Simulator or Android emulator, one per attack angle, and return a ranked, reproduced bug report. Run only when the user invokes it by name.
+description: Exercise a UI across failure angles and report reproduced bugs ranked by severity. Run only when invoked by name.
 argument-hint: "[url or app] [flow]"
 disable-model-invocation: true
 ---
 
 # Break UI
 
-Map the app, send one agent per attack angle to try to break it, reproduce what they find, and report the bugs ranked by severity. Don't fix anything unless the user asks.
+Explore a UI, reproduce failures, and report evidence. Do not fix code unless requested.
 
-## 1. Set the target
+## 1. Establish the target
 
-Get these from the user's message, the project, or by asking. Use a question tool if you have one.
+Use the request and project setup to identify the URL/build, scoped screens/flows, test accounts, and off-limits actions. Default to the whole app when no narrower scope is given. Use local/dev/staging; obtain explicit authorization before testing production. Use test credentials and test payment data only.
 
-- **App:** a URL, a dev server to start, or an iOS/Android build to install.
-- **Scope:** the screens or flows to attack. Default to the whole app if the user doesn't say.
-- **Accounts:** test accounts or seed data the agents can use. Never use the user's real credentials.
-- **Off-limits:** anything the agents must not touch, such as account deletion or real payments.
+Prefer the harness's supported browser/simulator/emulator tools and follow their usage instructions. Other automation is a fallback when supported tools are unavailable. If you cannot both interact and observe results, report the missing capability and stop. Start the app through its documented setup if needed; confirm it loads and capture a screenshot.
 
-Only attack local, dev or staging environments. If the target looks like production (a public domain with real users, live payment keys), stop and ask before going further.
+## 2. Map and select angles
 
-## 2. Find the tools
+Map in-scope screens, navigation, inputs, forms, modals, and destructive controls. Capture baseline screenshots and note existing defects without excluding them from the final report.
 
-Work out what this harness can drive. Look for, in order:
+Read [references/attack-angles.md](references/attack-angles.md). Use the requested angles, or all applicable angles: Input, Timing and repetition, Navigation and state, Layout and viewport, Failure paths, Keyboard and accessibility. Report exclusions with reasons.
 
-- **Browser:** a browser automation tool (a built-in browser, a browser MCP server such as Playwright or Chrome DevTools, or a browser extension). If there's none but Node is installed, you can write and run Playwright scripts.
-- **iOS:** a simulator tool, or `xcrun simctl` for install, launch, screenshots, deep links and app state, plus `idb` or a UI test runner for taps if one is installed.
-- **Android:** an emulator tool, or `adb` (`adb shell input tap/text/swipe`, `adb exec-out screencap -p`, `adb shell am start -d <deeplink>`).
+## 3. Exercise
 
-If you can't find a way to both act on the UI and see it, tell the user what's missing and stop.
+Use the brief below yourself or delegate one angle per subagent when available. Default budget: 40 UI actions per angle; honor a user-specified budget.
 
-Start the app if it isn't running, and confirm you can load the first screen and take a screenshot.
+```text
+Target and scope: <URL/build, allowed host/app, screens/flows>
+Angle and attacks: <selected attack-angles.md section>
+Map and baseline defects: <short map>
+Accounts and off-limits actions: <test account references; restrictions>
+Budget: <actions>
+Evidence directory: <scratch or gitignored path>/<angle>/
 
-## 3. Map the app
-
-Do one quick pass yourself before sending anyone:
-
-- List the screens and flows in scope, and how to reach each one (URL, deep link, or taps from launch).
-- Note every input, form, destructive button, modal and list.
-- Save a baseline screenshot of each screen.
-- Note anything that's already broken, so agents don't report it as new.
-
-Keep the map short. It's the brief every agent gets.
-
-## 4. Pick the angles
-
-Read [references/attack-angles.md](references/attack-angles.md). By default send one agent for each angle:
-
-1. Input
-2. Timing and repetition
-3. Navigation and state
-4. Layout and viewport
-5. Failure paths
-6. Keyboard and accessibility
-
-Drop angles that don't apply (a read-only dashboard has little to fuzz), and say which you dropped and why. If the user names angles, send only those.
-
-## 5. Send the agents
-
-Give each agent this brief, filled in:
-
-```
-You're trying to break <app> at <url or build>. Your angle: <angle>.
-
-App map:
-<map from step 3>
-
-Attacks to try:
-<the angle's section from attack-angles.md>
-
-Rules:
-- Only act on <target host or app>. Don't follow links off it.
-- Use only these test accounts: <accounts>. Never enter real credentials or payment details.
-- Don't touch: <off-limits>.
-- Don't edit the code.
-- Save screenshots to <evidence dir>/<angle>/.
-- Stop after about <budget> actions, or when you run out of ideas for this angle.
-
-For each bug, report: title, where, steps to reproduce, expected, actual,
-evidence (screenshot paths, console or log errors). Report only real
-misbehavior, not style opinions. If you found nothing, say what you tried.
+Stay within the target and scope. Do not edit code or use real payment data.
+Report observable failures: title, location, exact reproduction steps,
+expected behavior and its source, actual result, screenshots/logs.
+If no failures, report what was attempted and blocked.
 ```
 
-Use a scratch directory outside the repo for evidence, or one that's gitignored. Set the budget to about 40 actions unless the user asks for a longer or shorter run.
+Parallel agents need isolated UI sessions. Use distinct accounts/test records for shared backend state when practical. On a shared tab/device, run sequentially. Reset only disposable, authorized test state; never clear unrelated user data. Keep evidence outside tracked source files and credentials out of reports.
 
-**Running them:**
+## 4. Reproduce and rank
 
-- If your harness can start subagents, run the agents in parallel. Otherwise, work through the angles one at a time yourself, following the same brief.
-- **Browser:** give each agent its own tab, window or browser context so they don't navigate each other away. If they share a backend, give each its own test account where you can.
-- **iOS and Android:** agents can't share one device. Run them one after another, or give each its own simulator (`xcrun simctl clone`) or emulator.
-- Reset the app between agents on a shared device (reinstall, or clear its data) so one agent's damage doesn't show up in the next agent's report.
+Retest findings from a known state, merge duplicates, and retain clear steps. Record intermittent findings with attempts/successes. Move unconfirmed findings to Not reproduced; do not count them as bugs.
 
-## 6. Reproduce the findings
+| Severity | Criterion |
+| --- | --- |
+| Critical | Data loss/corruption, security breach, app-wide crash, or core flow blocked without a workaround. |
+| High | Incorrect data, stuck state requiring reload, or core flow broken with a workaround. |
+| Medium | Broken secondary feature, lost input, or missing/misleading error. |
+| Low | Layout, visual, or wording defect without functional blockage. |
 
-Before reporting, try each finding again from a fresh state, following its steps exactly.
+Use the highest applicable severity and explain its concrete impact. Do not report style preferences as defects.
 
-- **Reproduced:** keep it.
-- **Only sometimes:** keep it and mark it flaky, with how many tries it took.
-- **Not reproduced:** drop it, but list it at the end so the user can check.
+## 5. Report
 
-Merge duplicates. Two agents often hit the same bug from different angles; keep the clearest steps and note both angles.
-
-## 7. Report
-
-Rank the bugs by severity:
-
-- **Critical:** crash, data loss or corruption, security hole, or a core flow that can't be finished.
-- **High:** wrong data shown or saved, a stuck state that needs a reload, or a core flow broken with a workaround.
-- **Medium:** a broken secondary feature, a missing or misleading error, or lost input.
-- **Low:** layout, visual or wording problems that don't block anything.
-
-Use this format:
-
-```
-## Break UI: <app>
-
-<n> bugs: <n> critical, <n> high, <n> medium, <n> low
-Angles: input, timing, navigation, layout, failure paths, keyboard
-
-### 1. [Critical] Checkout submits twice on double-click
-Where: /checkout, Pay button
-Angle: timing
-Steps:
-1. Add any item to the cart and go to /checkout
-2. Double-click Pay
-Expected: one order
-Actual: two orders created, card charged twice (test mode)
-Evidence: evidence/timing/checkout-double.png, POST /orders x2 in network log
-```
-
-End with:
-
-- **Not reproduced:** findings you dropped, one line each.
-- **Not covered:** angles or screens nobody reached, and why.
-
-Then ask whether the user wants you to fix any of them. Don't start fixing on your own.
+Use [references/report-template.md](references/report-template.md). Include coverage and blocked checks even if no bugs were found. End with the report; offer fixes if the user has not already requested them.

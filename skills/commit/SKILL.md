@@ -1,111 +1,30 @@
 ---
 name: commit
-description: Summarize uncommitted changes as conventional-commit bullets and propose a commit message. Use when the user asks to commit or wants a commit message.
+description: Review uncommitted changes, propose a conventional commit message, and commit the agreed scope when authorized.
 argument-hint: "[-y]"
 ---
 
 # Commit
 
-Summarize the working tree, agree on scope with the user, propose a message, and commit only after they approve.
+Inspect changes, agree on scope, and use [references/commit-template.md](references/commit-template.md) for the summary and message. A message-only request does not authorize a commit.
 
-## Auto-approve with `-y`
+## 1. Inspect
 
-If the user passes `-y` (`/commit -y`, or "commit -y"), don't stop to ask anything:
+Run `git status --porcelain=v1`, `git diff --staged`, `git diff`, and `git ls-files --others --exclude-standard`. Read relevant untracked source; note generated files, lockfiles, and binaries without dumping them. If there are no changes, report that and stop.
 
-- **Scope:** commit only the files this thread changed. If this thread changed nothing, commit everything. Leave out files with hunks from both groups.
-- **Message:** show the summary and the message, then commit right away without waiting for approval. Make one commit, even if the changes could be split.
-- **Report:** after committing, list any files you left out so the user can commit them separately.
+Distinguish this thread's changes, other changes, mixed files, and the pre-existing staged set. Do not infer authorship from filenames or staging alone.
 
-Everything else in this skill still applies.
+## 2. Choose scope
 
-## 1. Gather the changes
+- **Default:** reuse explicit scope already provided. Otherwise use this thread's changes if they are the only changes; when other work exists, show the groups and ask for this thread, everything, or only pre-staged changes. Ask whether to include or omit mixed files; do not silently split hunks.
+- **`-y`:** commit only this thread's files; if this thread changed nothing, commit all changes. Omit mixed files and report them. Make one commit without waiting for further approval.
 
-Run these in the repo root:
+Show the selected scope and message before committing. In default mode, wait for message approval unless the user has already authorized committing without further review. For unrelated changes, propose separate commits; `-y` keeps the single-commit behavior.
 
-```bash
-git status --porcelain=v1
-git diff --staged
-git diff
-git ls-files --others --exclude-standard
-```
+## 3. Commit and report
 
-Read untracked files that look like source. Skip lockfiles, build output and binaries; note that they changed and move on.
+Stage exactly the agreed paths with `git add -- <paths>`; use `git add -A` only for an agreed all-changes scope. If unrelated files were already staged, unstage them before committing and report it; preserve their working-tree edits.
 
-If nothing has changed, say so and stop.
+Use `git commit -F <message-file>` or a quoted heredoc to preserve the message. Honor hooks. If a hook fails, inspect the resulting index/worktree, fix an in-scope cause, and retry normally; stop if the fix requires unrelated work. Never push, amend, or bypass hooks unless requested.
 
-## 2. Ask about scope
-
-Other sessions, editors or the user may have changed files that this thread never touched. Split the changes into two groups:
-
-- **This thread:** files you created, edited or deleted in this conversation.
-- **Other:** everything else.
-
-If the "Other" group is empty, say that every change is from this thread and continue. Otherwise list both groups and ask the user which to commit. Use a question tool if you have one.
-
-- **Only this thread** (list the files)
-- **Everything** (list the extra files)
-
-If a file has hunks from both groups, point it out. Ask whether to include the whole file or leave it out. Don't try to split hunks without asking.
-
-If the user already staged files before you started, mention it and treat the staged set as a third option: "Only what's staged".
-
-## 3. Summarize the changes
-
-Show a short title and one bullet per logical change, each prefixed with its conventional-commit type:
-
-```
-Add CSV export to the reports page
-
-- feat: export the current report as CSV from the toolbar
-- fix: date filter dropped the last day of the range
-- refactor: move report query building into reports/query.ts
-- chore: bump papaparse to 5.4.1
-```
-
-Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `build`, `ci`, `chore`, `revert`.
-
-- Describe what changed for the user or the codebase. Don't list files.
-- Group related edits across files into one bullet.
-- Mark breaking changes with `!` after the type (`feat!:`) and say what breaks.
-
-## 4. Propose the commit message
-
-Pick the type of the most significant change (`feat` > `fix` > the rest). Always use this format, whatever earlier commits in the repo look like.
-
-```
-feat(reports): add CSV export
-
-Adds an Export button to the reports toolbar that downloads the
-current view as CSV.
-
-- fix: date filter now includes the last day of the range
-- refactor: report query building lives in reports/query.ts
-- chore: bump papaparse to 5.4.1
-```
-
-- Subject: `type(scope): summary`. Use the imperative mood, lowercase after the colon, no trailing period, 72 characters or fewer.
-- Scope: one lowercase word naming the feature, module or top-level folder the change is about (`auth`, `reports`, `api`). Leave it out if the change spans the whole repo.
-- Body: say why the change was made and what it does, wrapped at 72 characters. Add the smaller changes as bullets.
-- Footer: `BREAKING CHANGE: ...` when something breaks, and `Refs: <issue>` only when the user names an issue.
-
-If the changes are unrelated, for example a feature plus an unrelated dependency bump, suggest splitting them into separate commits and propose a message for each.
-
-## 5. Commit on approval
-
-Wait for the user to approve or edit the message (skip this with `-y`). Then:
-
-- Stage exactly the agreed files: `git add -- <paths>`. Use `git add -A` only when the user chose "Everything".
-- If files outside the agreed scope were already staged, unstage them first with `git restore --staged -- <paths>`, and tell the user you did.
-- Commit with a heredoc so the formatting survives:
-
-  ```bash
-  git commit -F - <<'EOF'
-  <subject>
-
-  <body>
-  EOF
-  ```
-
-- Show `git log --oneline -1` and `git status --short` so the user can see what was committed and what's left.
-
-Never push, amend, or skip hooks (`--no-verify`) unless the user asks. If a hook fails, show its output, fix the cause if it's in scope, and create a new commit rather than amending.
+Report the new hash/subject, committed scope, and remaining changes using `git log --oneline -1` and `git status --short`.

@@ -1,151 +1,75 @@
 # Blueprint template
 
-Every blueprint follows this structure. The example is a team-invitations feature; replace it with the real content. Keep the headings exactly as written, because `/blueprint-build` and `/blueprint-clean` read them.
+Keep the headings and status values below: the build and cleanup skills use them. Replace placeholders with repo-specific content. Write `None.` for empty sections. Do not leave example business rules or unresolved placeholders in an approved blueprint.
 
-The blueprint is read by an agent that has never seen the planning conversation. Write every section so it stands on its own: name real files, spell out rules, and never write "as discussed".
+The file must stand alone in a fresh session: name real files, specify observable behavior, and avoid “as discussed”.
 
-````markdown
+```markdown
 ---
-title: Team invitations
-slug: team-invitations
+title: <feature title>
+slug: <kebab-case slug>
 status: draft
-created: 2026-09-28
-base_branch: main
+created: <YYYY-MM-DD>
+base_branch: <default branch, or unknown>
+confirmed_sections: []
 ---
 
-# Team invitations
+# <feature title>
 
 ## Goal
-
-Team admins can invite people by email. The invitee gets a link, accepts it,
-and joins the team with the role the admin picked.
+<What the user can do when this ships. Include constraints.>
 
 ## Non-goals
-
-- Bulk invites from CSV.
-- Invites to people who already have an account in another org.
+- <Explicitly excluded work.>
 
 ## Context
-
-- `src/teams/team.ts`: the `Team` and `Membership` models. Memberships already carry a `role`.
-- `src/api/routes/teams.ts`: team routes. Auth is `requireRole("admin")` middleware.
-- `src/mail/send.ts`: `sendMail(template, to, vars)`. Templates live in `src/mail/templates/`.
-- Tests: Vitest, `*.test.ts` next to the source, database tests use `withTestDb()`.
+- `<path>`: <relevant types, behavior, and conventions>
+- Tests: <framework, fixtures, locations, focused and required commands>
 
 ## Domain models
-
-```mermaid
-erDiagram
-  Team ||--o{ Invitation : has
-  Team ||--o{ Membership : has
-  Invitation {
-    uuid id
-    uuid teamId
-    string email
-    Role role
-    string tokenHash
-    datetime expiresAt
-    datetime acceptedAt
-  }
-```
-
-**Invitation** (new)
-- `email` is stored lowercased and trimmed.
-- `tokenHash` is a SHA-256 of the token; the raw token only exists in the email.
-- `expiresAt` is 7 days after creation.
-
-Invariants:
-- At most one pending (not accepted, not expired) invitation per `(teamId, email)`.
-- An accepted invitation is never accepted again.
+<New/changed entities: fields, types, relationships, migrations, invariants.>
+<An erDiagram when there are entity relationships; otherwise explain why none applies.>
 
 ## APIs
-
-**`POST /teams/:teamId/invitations`** (admin only)
-- Body: `{ email: string, role: "member" | "admin" }`
-- 201: `{ id, email, role, expiresAt }`
-- 409 `already_member`: the email already belongs to a team member.
-- 409 `already_invited`: a pending invitation exists. Resend instead.
-
-**`POST /invitations/accept`** (signed in)
-- Body: `{ token: string }`
-- 200: `{ teamId, role }`
-- 410 `expired`, 404 `not_found`, 409 `already_accepted`
+<For each endpoint/function/event: signature, auth, inputs, outputs,
+validation, errors, and side effects. Say “None.” if no interface changes.>
 
 ## Data flow
-
-```mermaid
-sequenceDiagram
-  participant A as Admin
-  participant API
-  participant DB
-  participant Mail
-  participant U as Invitee
-  A->>API: POST /teams/:id/invitations
-  API->>DB: insert Invitation (tokenHash)
-  API->>Mail: send invite link with raw token
-  U->>API: POST /invitations/accept {token}
-  API->>DB: find by hash, check expiry, create Membership, set acceptedAt
-  API-->>U: 200 {teamId, role}
-```
-
-1. The admin creates the invitation. The API hashes a random token, stores the hash and emails the raw token.
-2. The invitee opens the link and, once signed in, posts the token.
-3. Accepting creates the membership and sets `acceptedAt` in one transaction.
+<A sequenceDiagram or flowchart for the main paths, followed by a
+numbered walkthrough including failure handling and transaction boundaries.>
 
 ## Logic to test
-
-**Creating an invitation** (`src/teams/invitations.test.ts`)
-- normalizes `"  Bob@Example.com "` to `"bob@example.com"`
-- rejects a second pending invite for the same email with `already_invited`
-- allows a new invite once the previous one has expired
-- rejects an email that already belongs to a member with `already_member`
-
-**Accepting an invitation**
-- creates a membership with the invited role
-- returns `expired` one second after `expiresAt` (inject the clock)
-- returns `already_accepted` on the second accept and creates no second membership
-- rolls back the membership if setting `acceptedAt` fails
+**<test file or suite>**
+- <Scenario → expected result; identify the rule or error path covered.>
 
 ## Implementation steps
-
-- [ ] 1. Add the `Invitation` model and migration. Verify: migration runs up and down.
-- [ ] 2. Add `createInvitation` in `src/teams/invitations.ts` with its tests.
-- [ ] 3. Add `acceptInvitation` with its tests.
-- [ ] 4. Add the invite email template and send it from `createInvitation`.
-- [ ] 5. Add both routes in `src/api/routes/`. Verify: route tests for each status code.
+- [ ] 1. <Concrete change, with its tests. Verify: exact command or observable check.>
 
 ## Decisions
-
-- **Store a token hash, not the token.** A database leak shouldn't expose working invite links. Alternative: store the raw token (simpler lookups).
-- **Unique pending invite per email.** Stops duplicate emails. Alternative: allow many and accept any (confusing when roles differ).
+- **<Choice>**: <reason>. Alternative: <other choice and why it was rejected>.
 
 ## Open questions
-
 None.
-````
+```
 
-`/blueprint-build` adds these at the end:
+## Planning progress
+
+`confirmed_sections` contains the exact headings approved by the user, including Goal and Non-goals when scope is confirmed. It records section review, not final blueprint approval. In quick mode, leave it empty until the user approves the draft. For older drafts without this field, ask which section to resume rather than inferring approval from populated text.
+
+## Build fields and sections
+
+`/blueprint-build` adds `base_sha` on the first build and preserves it on resume. It appends these sections:
 
 ```markdown
 ## Deviations
-
-- Step 3: <what changed from the plan and why>
+- Step <n>: <change or skipped check, reason, and approval if required>
 
 ## Summary
-
-<the build summary>
+<Use the blueprint-build summary template.>
 ```
 
-## Status values
+Statuses: `draft` → `approved` → `building` → `done`. Only user approval permits `approved`; only completed steps and successful required verification permit `done`. Open questions block a build even if the status says approved.
 
-- `draft`: still being planned. `/blueprint-build` refuses it.
-- `approved`: the user approved it and there are no open questions.
-- `building`: `/blueprint-build` has started. The checkboxes show progress.
-- `done`: built and summarized. `/blueprint-clean` removes it.
+Keep diagrams focused on this feature. Use an ER diagram for relationships, a sequence diagram for component interactions, and a flowchart for branching logic. Explain them in prose so the blueprint is usable without Mermaid rendering.
 
-## Diagram guidance
-
-- **Domain models:** `erDiagram`. Show only the entities this feature adds or changes and the ones they relate to.
-- **Data flow:** `sequenceDiagram` for requests that pass between components; `flowchart` for branching logic or background jobs.
-- Keep each diagram under about 15 nodes. Split it rather than cram it.
-- Every diagram gets a short numbered walkthrough in prose, so the section still makes sense where Mermaid doesn't render.
+Cover relevant invariants, validation, state changes, time boundaries, and error paths in Logic to test. Keep implementation steps independently verifiable, pairing tests with their code and ordering work so the build and required checks pass after each step.

@@ -1,75 +1,63 @@
-# Setup template
+# Project setup template
 
-Write this into `AGENTS.md` at the repo root, between the markers. Fill in every placeholder, drop rows and sections that don't apply, and keep commands copy-pasteable. Mark anything that couldn't be verified with *(unverified)*.
+Use the same structure for review and for the saved `AGENTS.md` block. Replace placeholders with detected/confirmed values, omit inapplicable rows, and use `None.` for empty lists. Commands include their working directory. Unknown values say `Unresolved: <what is needed>`; unchecked facts say *(unverified)*.
 
 ```markdown
 <!-- setup-project:start -->
 ## Running the app
 
-Prerequisites: <tool versions, env files, secrets and where to get them>
+Prerequisites: <tool versions, env files, and secret sources; no secret values>
 
-Start in this order:
+Services in dependency order:
 
-| Service | Start (from dir) | Ready when | URL | Stop |
-| --- | --- | --- | --- | --- |
-| Postgres | `docker compose up -d postgres` (repo root) | port 5432 accepts connections | localhost:5432 | `docker compose stop postgres` |
-| Keycloak | `docker compose up -d keycloak` (repo root) | `http://localhost:8180/realms/<realm>` returns 200 | http://localhost:8180 | `docker compose stop keycloak` |
-| Backend | `SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run` (`backend/`) | `/actuator/health` is `UP` | http://localhost:8080 | Ctrl+C |
-| Frontend | `npm start` (`frontend/`) | "Compiled successfully" in the log | http://localhost:4200 | Ctrl+C |
+| Service | Started by | Start (directory) | Ready when | URL | Stop (keeps data) |
+| --- | --- | --- | --- | --- | --- |
+| <name> | <agent / user> | `<command>` (`<dir>`) | <check and timeout> | <URL> | `<command>` or Ctrl+C |
 
-Who starts it: <the agent starts everything / the user runs it from the IDE; check with …>
+Data:
+- Migrations: <how and when they run>
+- Seed: <command and directory, or None.>
+- Reset (destructive; requires explicit authorization): <procedure, or None.>
 
-Data: <how migrations run, how to seed, how to reset to a clean state>
-
-Never: <off-limits actions, such as connecting to the shared dev database>
+Never: <off-limits environments/actions>
 
 ## Verifying changes
 
-A change is done when these pass:
+Required checks:
+- `<command>` (`<dir>`) — <when required and what it checks>
 
-1. `<build command>`
-2. `<lint / format / type check command>`
-3. `<tests that must pass>`
-4. UI changes are checked as described under UI verification
-
-UI verification: <the harness's built-in browser / iOS Simulator / Android emulator / …>, <after every UI change / only when asked>. Open the changed screen, exercise it, and check the console for errors. If it isn't available: <fallback, such as Playwright scripts or asking the user>.
+UI verification: <tool, when required, affected-flow checks, fallback>
 
 ### Auth
 
-Type: <email and password / Keycloak login page / SSO / magic link / …>
-
-Test accounts: see `.agents/test-accounts.md` (local only, not committed; ask the user if it's missing). Roles: <admin, user, …>
-
-API token: `<curl command for the token endpoint, with the password as a placeholder>`
-
-Blockers: <anything the agent can't do alone, and the workaround>
+Type: <none / login method>
+Test accounts: <existing source or local-only .agents/test-accounts.md>
+Roles: <relevant roles>
+API token: <enabled grant/command using credential placeholders, or None.>
+Blockers: <missing accounts, MFA, external SSO, etc.; workaround or None.>
 
 ## Tests
 
-| Kind | Agent writes new ones? | Run all | Run one | Needs |
+| Kind | Write / run only / leave alone | Run all (directory) | Run one (directory) | Needs |
 | --- | --- | --- | --- | --- |
-| Unit | yes | `./mvnw test` | `./mvnw test -Dtest=<Class>` | nothing |
-| Integration | yes | `./mvnw verify -Pintegration` | `./mvnw verify -Dit.test=<Class>` | Docker (Testcontainers) |
-| Frontend unit | yes | `npm test -- --watch=false` | `npx ng test --include=<path>` | Chrome |
-| End-to-end | run only | `npx playwright test` | `npx playwright test <file>` | full stack running |
+| <kind> | <policy> | `<command>` (`<dir>`) | `<command>` (`<dir>`) | <dependencies> |
 
-Conventions: <frameworks, where tests live, naming, what to mock, fixtures and builders to reuse, coverage threshold>
-
-Skip by default: <slow or flaky suites, and when to run them anyway>
+Conventions: <frameworks, locations, naming, boundaries to mock, reusable fixtures>
+Skip by default: <suite and when to run it anyway, or None.>
 <!-- setup-project:end -->
 ```
 
-## Test accounts file
+## Local test accounts
 
-Write this to `.agents/test-accounts.md` when the credentials don't already live in the repo:
+Only create `.agents/test-accounts.md` after confirming it is untracked and gitignored. Reference existing credentials instead when available.
 
 ```markdown
 # Test accounts
 
-Local and dev only. Not committed; each developer keeps their own copy.
+Environment: <local/dev/staging URL>
+Local only; not committed. Each developer keeps their own copy.
 
 | Role | Username / email | Password | Notes |
 | --- | --- | --- | --- |
-| admin | admin@example.test | <password> | |
-| user | user@example.test | <password> | |
+| <role> | <test username> | <test password> | <restrictions> |
 ```

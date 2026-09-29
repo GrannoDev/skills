@@ -1,78 +1,34 @@
 ---
 name: stop-project
-description: Stop every service the project depends on, in reverse start order, using the setup that /setup-project saved to AGENTS.md. Keeps all data. Run only when the user invokes it by name.
+description: Stop project services from the saved setup in reverse order, preserving data. Run only when invoked by name.
 argument-hint: "[service...] [-y]"
 disable-model-invocation: true
 ---
 
 # Stop Project
 
-Stop the services from the setup in reverse start order: the frontend first, the database last. Stop processes that `/start-project` started, ones the user started, and the containers. Keep all data. Stopping is not resetting.
+Read the marked `setup-project` block in root `AGENTS.md` (legacy fallback: `CLAUDE.md`) and `.agents/run/` records. If the setup is absent, stop and suggest `/setup-project`. Follow its off-limits rules. Never remove volumes, reset data, or stop services outside this project's setup.
 
-## Auto-approve with `-y`
+## Scope and authorization
 
-If the user passes `-y` (`/stop-project -y`), stop processes that were started outside `/start-project` without asking. Everything else in this skill still applies.
+Stop all listed services by default, or only the named ones, in reverse startup order. Accept unambiguous aliases; ask about unmatched or ambiguous names. Managed processes and project-scoped container stop commands are covered by this invocation. Confirm before stopping a service started externally (for example an IDE debug session), unless `-y` or an earlier instruction already authorizes it.
 
-## 1. Read the setup
+## Workflow
 
-Read the `setup-project` section of `AGENTS.md` at the repo root (between `<!-- setup-project:start -->` and `<!-- setup-project:end -->`). If it isn't there, check `CLAUDE.md`, where earlier runs put it.
+1. Check each service's container state or port. If not running, report it and remove only runtime records whose process is gone.
+2. For containers or services with explicit stop commands, verify the command targets this project and preserves data. Replace a documented destructive stop with its data-preserving equivalent; if none is known, leave it running and explain.
+3. For Ctrl+C services, compare `<service>.pid` and `<service>.json` with the live command, working directory, and OS start identity. Treat missing/stale/unverifiable records (including older PID-only records) as externally started. Locate its listener and check ownership; leave processes outside this repo alone regardless of `-y`. Use a recorded process-manager handle when applicable.
+4. Send TERM to the verified process and its verified descendants. Wait up to 20 seconds. If still running, recheck identity before sending KILL to those same project processes; report forced stops.
+5. Verify the selected containers stopped or ports were freed. Delete PID/identity records only once the process is gone; keep logs. Report unselected services as outside this run's scope.
 
-If neither has it, tell the user to run `/setup-project` first and stop.
+## Output
 
-From **Running the app**, take the services in order with their URL (for the port) and stop command, and the **Never** list. Follow it for the whole run.
+```markdown
+| Service | Status | Detail |
+| --- | --- | --- |
+| <name> | <status> | <reason if forced, left running, or failed> |
 
-Also list `.agents/run/*.pid` at the repo root. These are the processes `/start-project` started.
-
-## 2. Pick the services
-
-If the user named services (`/stop-project frontend`), stop only those. Match names loosely against the Service column. If a name matches nothing, list the services and ask.
-
-Otherwise stop them all, in reverse start order.
-
-## 3. Stop each service
-
-For each service, first check whether it's running: its container is up (`docker compose ps <service>`), or something listens on its port (`lsof -nP -iTCP:<port> -sTCP:LISTEN`). If not, mark it "not running" and move on.
-
-**Containers and other services with a stop command** (`docker compose stop postgres`): run the command from the setup. If several rows share one command, run it once.
-
-If the stop command would delete data (`docker compose down -v`, `docker volume rm`, dropping a database), don't run it. Stop without removing data (`docker compose stop <service>`) and tell the user what the setup says.
-
-**Processes stopped with Ctrl+C** (a backend or frontend dev server):
-
-1. **Started by `/start-project`:** if `.agents/run/<service>.pid` holds a live PID, stop it and its children. Build tools and `npm` start the real server as a child, so killing only the PID often leaves it running:
-
-   ```bash
-   kill_tree() { for c in $(pgrep -P "$1"); do kill_tree "$c"; done; kill -TERM "$1" 2>/dev/null; }
-   kill_tree "$(cat .agents/run/backend.pid)"
-   ```
-
-   Then delete the PID file. Keep the log; the next start overwrites it.
-2. **Started some other way** (from the IDE or a terminal, or a stale PID file): find what listens on the port and check its working directory (`lsof -a -p <pid> -d cwd -Fn`). If it's inside this repo, ask the user before stopping it, since it may be an IDE debug session. Skip the question with `-y`. If it's outside the repo, it isn't this project's: leave it and say so.
-
-**Wait until it's stopped.** Give each service up to 20 seconds to free its port or stop its container. If a process is still running after that, send `kill -KILL` to the same processes and say you had to.
-
-## 4. Check nothing is left
-
-Once every service is handled:
-
-- Every service's port is free, or its container is stopped.
-- No PID from `.agents/run/` is still alive. Delete PID files whose process is gone.
-
-Never stop containers or processes that aren't in the setup, even if they look related.
-
-## 5. Report
-
-```
-## Project stopped
-
-| Service | Status |
-|---------|--------|
-| Frontend | stopped |
-| Backend | stopped (started from the IDE, you confirmed) |
-| Keycloak | stopped |
-| Postgres | not running |
-
-Data is kept. Start again with /start-project.
+Data is kept. Start with /start-project.
 ```
 
-Use "stopped", "stopped (forced)", "not running", "left running" (the user declined, or it isn't this project's) or "failed". Under the table, add one line for each service left running or failed, with the reason and the command the user can run to stop it themselves.
+Statuses: `stopped`, `stopped (forced)`, `not running`, `left running`, `failed`. Include a project-scoped manual stop command for failures when known.

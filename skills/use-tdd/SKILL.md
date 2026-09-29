@@ -1,43 +1,31 @@
 ---
 name: use-tdd
-description: Fix a bug test-first with a focused regression test that fails before the fix and passes after. Run only when the user invokes it by name.
+description: Fix a bug with a focused regression check that fails before the fix and passes after. Run only when invoked by name.
 argument-hint: "[bug]"
 disable-model-invocation: true
 ---
 
 # TDD Bug Fix
 
-When fixing a bug with a clear, cheap test path, make the broken behavior executable before changing production code. The goal is a focused regression test that fails before the fix and passes after it.
-
-Do not force a test when it would be impractical. If the available test would require broad harness setup, brittle mocks, slow end-to-end infrastructure, production-only state, vague reproduction steps, or large unrelated fixture churn, skip adding a new test and use the closest useful verification instead.
+Make the bug executable before changing production code when an existing, practical test path is available.
 
 ## Workflow
 
-1. **Understand the bug.** Identify the intended behavior, current behavior, affected path, and smallest observable reproduction.
-2. **Choose the narrowest executable check.** Prefer the closest unit, component, integration, or regression test already used for that codepath. If no practical test path is obvious, do not create one from scratch just to satisfy the workflow.
-3. **Write the failing test first.** Add the smallest focused test that would have caught the bug. The test should encode intended behavior, not mirror the current implementation.
-4. **Run the new test before fixing.** Confirm it fails for the intended reason. If it passes or fails for an unrelated reason, correct the test or reproduction before editing the implementation.
-5. **Fix the bug.** Make the smallest production change that satisfies the intended behavior while preserving nearby contracts.
-6. **Rerun the regression test.** Confirm the test now passes.
+1. Identify the expected behavior, current behavior, and smallest reproduction. Resolve missing requirements before asserting an expectation.
+2. Choose the closest existing unit, component, or integration test path. Write a focused regression test of observable behavior, reusing fixtures and conventions.
+3. Run it before the fix. Confirm failure comes from the bug, not setup, syntax, or a broken fixture. If it passes, correct the reproduction/test before editing production code.
+4. Make the smallest fix that preserves nearby contracts. Do not weaken assertions to fit incorrect behavior.
+5. Rerun the regression test and relevant nearby/required checks. For flaky bugs, control timing, randomness, or other external state where practical.
 
-## If a Failing Test Is Impractical
+If the test would need broad harness setup, brittle mocks, slow infrastructure, inaccessible production state, or unrelated fixture churn, use the closest useful executable or manual reproduction instead. Record why; do not build a new framework just to satisfy TDD.
 
-Use the closest executable regression check instead: a targeted script, manual reproduction command, browser automation, snapshot comparison, log assertion, or focused integration check.
+## Output
 
-Prefer no new test over a bad test. A bad test is one that mostly tests mocks, encodes current implementation details, depends on timing or unrelated global state, needs expensive infrastructure for a small fix, or would be deleted immediately after proving the fix.
+```markdown
+Fixed: <bug and resulting behavior>
+Before: <test/check, command, and observed failure>
+After: <same check and result; nearby/required checks and results>
+Limitations: <missing failing-before evidence or incomplete verification, with reason; or None.>
+```
 
-## Guardrails
-
-- Do not change tests merely to match a wrong implementation.
-- Do not weaken existing assertions unless the expected behavior has genuinely changed and the reason is clear.
-- Keep the regression test focused on the bug. Avoid broad fixture churn or unrelated coverage expansion.
-- If the bug is flaky, make the test deterministic where possible and document the signal being locked down.
-- If the bug exposes a broader class of failures, first land the focused regression path, then consider additional sibling coverage.
-
-## Final Response
-
-Report the evidence, not just the outcome:
-
-- Name the failing-before test or executable check and the failure it produced.
-- Name the passing-after test run and any nearby validation performed.
-- If failing-before evidence could not be demonstrated, state why and describe the closest regression check used instead.
+Report observed evidence. Never claim a failing-before or passing-after result you did not demonstrate.

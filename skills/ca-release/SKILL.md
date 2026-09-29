@@ -1,160 +1,77 @@
 ---
 name: ca-release
-description: Release a Climbalong Maven application to production. Merges develop into main/master, bumps the pom version, tags release/x.y.z, pushes, then merges back into develop as the next -SNAPSHOT and pushes develop. Run only when the user invokes it by name.
+description: Release a Climbalong Maven app by merging, versioning, tagging, pushing, and syncing develop. Run only when invoked by name.
 argument-hint: "[branch]"
 disable-model-invocation: true
 ---
 
 # CA Release
 
-Merge into the production branch, bump the version, tag, push, and bring develop back in sync. Ask about the version bump and ask once more before pushing. Do everything else without stopping.
+Release to `main`/`master`, then sync `develop` to the release version plus `-SNAPSHOT`. Finish on `develop`. Ask for the version choice and, once the release is locally prepared, approval for all pushes; pushing deploys to production. Reuse explicit approvals already provided.
 
-The user can start from any branch: the production branch, `develop`, or a feature or bug branch. A successful release always ends on `develop`.
+**Failure rule:** stop on failed commands, rejected pushes, failing hooks, or conflicts other than project-version conflicts. Report the failed command and current step. Do not reset, force, retry, or switch branches after failure.
 
-If any command fails (a merge conflict other than the version, a rejected push, a failing hook), stop where you are, show the output, and say which step you reached. Don't reset, force, retry or switch branches on your own.
+## Version-conflict exception
 
-## Version conflicts
-
-Both merges (steps 2 and 6) often conflict on the pom version. Resolve these yourself when every conflicted hunk is the project version: the root `<version>`, or a module's `<parent><version>` pointing at the root project.
-
-- In each hunk, keep the side named in that step. The version gets set right afterwards anyway.
-- Edit the conflict markers by hand. Don't use `git checkout --ours/--theirs` on the whole file, because that throws away the other side's non-conflicting changes.
-- Run `git add` on the resolved poms and `git commit --no-edit` to finish the merge. Tell the user in one line that you resolved a version conflict.
-
-For any other conflict, such as dependency versions, other pom changes or other files, stop and hand over to the user.
+Resolve a merge conflict only when every conflicted hunk is the root project's `<version>` or a module's `<parent><version>` referencing that root. Keep the side specified below, edit only conflict hunks, stage the resolved poms, and finish with `git commit --no-edit`. Report the resolution. Any dependency-version or other conflict stops the release. Never replace a whole pom with ours/theirs.
 
 ## 1. Prepare
 
-Run these in the repo root:
+Run `git fetch origin`, `git branch --show-current`, and `git status --short`.
 
-```bash
-git fetch origin
-git branch --show-current
-git status --short
-```
-
-- **Production branch:** use `main` if it exists locally or on origin, otherwise `master`. If neither exists, stop.
-- **Source branch:** what gets merged into production.
-
-  | Starting on | Source |
-  | --- | --- |
-  | the production branch | `develop` |
-  | `develop` | `develop` |
-  | a feature or bug branch | that branch |
-
-  A branch the user names overrides this.
-- **Uncommitted changes:** they come along into the release commit (step 4). If there are any, list them briefly.
-- **Maven:** use `./mvnw` if it exists, otherwise `mvn`.
-
-If the source is `develop`, bring it up to date with origin first. When you're on `develop`, run `git pull --ff-only`. From any other branch, run `git fetch origin develop:develop`, which fast-forwards it without switching.
-
-Tell the user the plan in one line, for example `Releasing develop → master`.
+- Production: `main` if local or on origin, otherwise `master`; stop if neither exists.
+- Source: the named branch, otherwise the starting feature/bug branch, otherwise `develop` when starting on production or develop. Report `Releasing <source> → <prod>`.
+- Uncommitted work: list it; it is included in the release commit except local runtime data/secrets/build output described below.
+- Maven: `./mvnw` when present, otherwise `mvn`.
+- When source is develop, fast-forward it: `git pull --ff-only` if currently there, otherwise `git fetch origin develop:develop`.
 
 ## 2. Merge into production
 
-```bash
-git checkout <prod>
-git pull --ff-only
-```
+Run `git checkout <prod>` and `git pull --ff-only`. Stop if dirty work prevents checkout; do not stash or discard it.
 
-Before merging, read the project version from the root `pom.xml` (the project's own `<version>`, not the `<parent>` one). Read the source's version too, with `git show <source>:pom.xml`. Step 3 compares them. Then merge:
+Before merging, read the root project's own version (not its parent version) from production `pom.xml` and `<source>:pom.xml`. Then `git merge --no-edit <source>`. For permitted version conflicts, keep the **source** side.
 
-```bash
-git merge --no-edit <source>
-```
+## 3. Choose and set the version
 
-If the checkout refuses because of uncommitted changes, stop and hand over to the user. If the merge conflicts on the version, resolve it as described in [Version conflicts](#version-conflicts), keeping the source side.
+Compare the saved production/source versions without `-SNAPSHOT`. If different, ask which to bump from. Offer Patch, Minor, Major in that order with exact resulting versions; if equal, use that common base.
 
-## 3. Choose the version
-
-Compare the two versions you read in step 2, both without `-SNAPSHOT`:
-
-- **Production:** the production branch's version before the merge.
-- **Source:** the source branch's version.
-
-**If they match** (for example master `1.2.3`, develop `1.2.3-SNAPSHOT`), bump from that version.
-
-**If they differ** (for example master `1.2.3`, develop `1.2.4-SNAPSHOT`), show both and ask which one to bump from:
-
-```
-The versions don't match: master is 1.2.3, develop is 1.2.4-SNAPSHOT.
-Which version should the bump start from?
-
-- master (1.2.3)
-- develop (1.2.4)
-```
-
-Then ask which bump to make. Use a question tool if you have one, with the options in this order:
-
-```
-Bumping from 1.2.3
-
-- Patch → 1.2.4
-- Minor → 1.3.0
-- Major → 2.0.0
-```
-
-Check that the tag doesn't already exist (`git tag -l release/<version>`). If it does, say so and ask again.
-
-Set the version across all modules:
+Check `release/<version>` against fetched/local and origin tags. If already present, choose another version before proceeding. Stop on an unsupported version format rather than guessing.
 
 ```bash
 <mvn> -q versions:set -DnewVersion=<version> -DgenerateBackupPoms=false
 ```
 
-If the versions plugin isn't available, edit the `<version>` in each `pom.xml` by hand.
+If the versions plugin is unavailable, edit only root-project/module versions by hand. Other Maven failures follow the failure rule. Verify all project/module versions are consistent.
 
-## 4. Commit
+## 4. Commit locally
 
-Stage everything except scrap files: local runtime data and secrets that must never be released. These include:
+Stage the release changes, including eligible uncommitted work, while excluding local runtime data and secrets: Keycloak/Azurite data, `__blobstorage__`, `__queuestorage__`, `__tablestorage__`, logs, `.env*`, IDE files, and build output. Classify by purpose; do not exclude source/config files merely because “keycloak” appears in their path. Report excluded paths.
 
-- Keycloak and Azurite data (anything named `*keycloak*`, `*azurite*`, `__blobstorage__`, `__queuestorage__`, `__tablestorage__`)
-- logs, `.env*` files, IDE files and build output
-
-Only exclude scrap files that git would otherwise pick up. Files already covered by `.gitignore` are ignored anyway.
-
-```bash
-git add -A -- . ':!<scrap path>' ...
-git commit -m "chore(release): <version>"
-```
-
-## 5. Tag and push
-
-Tag the release:
+Use explicit paths or `git add -A -- . ':!<excluded path>' ...`; inspect the staged diff. Commit `chore(release): <version>`, then tag:
 
 ```bash
 git tag -a release/<version> -m "Release <version>"
 ```
 
-Before pushing, show a short summary and wait for the user's go-ahead. Pushing deploys to production.
+## 5. Approve and push
 
-```
-Release 1.5.0 → master
-  merged: develop
-  commit: chore(release): 1.5.0  (pom.xml, api/pom.xml, …)
-  left out: azurite/, keycloak/realm-export.json
-  tag: release/1.5.0
-  then: develop → 1.5.0-SNAPSHOT, pushed
-```
+Show this concrete summary and wait for authorization unless already supplied:
 
-This one approval covers every push in the release, including `develop` in step 6.
-
-On approval:
-
-```bash
-git push origin <prod>
-git push origin release/<version>
+```text
+Release <version> → <prod>
+Source: <branch>
+Commit: <hash> chore(release): <version>
+Files: <changed release files>
+Excluded: <paths, or None.>
+Tag: release/<version>
+Then: merge production into develop, set <version>-SNAPSHOT, push develop.
 ```
 
-## 6. Back to develop
+Approval covers all three pushes. Run `git push origin <prod>`, then `git push origin release/<version>`.
 
-```bash
-git checkout develop
-git pull --ff-only
-git merge --no-edit <prod>
-```
+## 6. Sync develop
 
-If the merge conflicts on the version, resolve it as described in [Version conflicts](#version-conflicts), keeping the production side. Then:
+Run `git checkout develop`, `git pull --ff-only`, and `git merge --no-edit <prod>`. For permitted version conflicts, keep the **production** side.
 
 ```bash
 <mvn> -q versions:set -DnewVersion=<version>-SNAPSHOT -DgenerateBackupPoms=false
@@ -163,4 +80,4 @@ git commit -m "chore(release): <version>-SNAPSHOT"
 git push origin develop
 ```
 
-Finish on `develop` with `git log --oneline -3` and `git status --short`. If the release started from a feature or bug branch, say that its changes are now in `develop` as well.
+Use the same narrowly scoped version-edit fallback if the plugin is unavailable. Verify the updated versions before committing. Report release version, production branch, tag, develop snapshot, and final `git log --oneline -3` / `git status --short`. For a feature/bug source, mention its changes are now in develop.

@@ -1,119 +1,39 @@
 ---
 name: what-if
-description: Start a what-if session that walks through the edge cases of one feature, one question at a time, and ends with a test plan. Run only when the user invokes it by name.
+description: Review one feature's edge cases with the user and produce an evidence-backed test plan. Run only when invoked by name.
 argument-hint: "[-q] [feature or path]"
 disable-model-invocation: true
 ---
 
 # What If
 
-Work through the edge cases of one feature with the user, one "What if…?" at a time. Keep a ledger of every case and end with a list of tests to write. Don't write code or tests unless the user asks.
+Review one feature, keep a case ledger in chat, and end with a test plan. Do not write code or tests unless requested.
 
-## Quick mode with `-q`
+## Modes
 
-If the user passes `-q` (`/what-if -q <feature>`, or "what-if -q"), skip the interview:
+- **Default:** confirm the contract, then ask one “What if…?” at a time. Update the ledger after each answer; show it every 5 questions. Offer another round after 15 questions. Stop when the user asks or cases run out.
+- **`-q`:** skip the interview. Derive expectations from docs, tests, and the stated contract. Mark unsupported expectations *(assumed)*; unresolved product decisions remain Open. An assumption alone cannot establish a Bug.
 
-- **Contract:** state it and continue without waiting for confirmation.
-- **Questions:** don't ask any. For each case, decide the expected behavior yourself from the contract, the existing tests, docs and comments, and common sense.
-- **Assumptions:** mark every expected behavior you decided with *(assumed)*. A 🔴 in quick mode means "looks wrong to me", not a confirmed bug.
-- **Open cases:** when there's no reasonable default, such as a business rule or a product decision, mark the case ❓ instead of guessing.
-- **Report:** go straight to the report in step 5, covering every case you found. Start it with one line saying the expected behaviors are assumed and the user should check the 🔴 and ❓ cases first.
+## Workflow
 
-Everything else in this skill still applies.
+1. **Identify the feature.** Use the requested feature/path, or infer from the branch/diff and confirm it in default mode. Ask if still ambiguous.
+2. **State the contract.** Read implementation and tests. Summarize inputs, outputs, state, dependencies, and invariants. Confirm or correct it in default mode.
+3. **Find cases.** Use [references/lenses.md](references/lenses.md) for general risks and only relevant sections of [references/checklist.md](references/checklist.md) for platform specifics. Deduplicate overlapping cases. Prioritize likely failures with high impact, especially loss of data, money, or access.
+4. **Inspect evidence.** For each case, identify current behavior with file:line, relevant test names, and where the expected behavior comes from. Say when behavior cannot be determined; absence of a test does not prove a bug.
+5. **Resolve expectations.** In default mode, ask using [references/report-template.md](references/report-template.md). Record the user's answer, update the contract if needed, and add related cases. If answers conflict, explain the conflict once and ask which takes precedence.
+6. **Report.** Use the same reference for the ledger and final report. Propose scenario-named tests grouped by existing file/suite, focused on observable behavior. Use tables for similar input cases and existing fixtures; do not prescribe a new test framework.
 
-## 1. Pin the feature
+## Case statuses
 
-Get the feature from the user's message. If they didn't name one, use the current branch or uncommitted diff and confirm it with them. If it's still unclear, ask. Use a question tool if you have one.
+| Status | Meaning |
+| --- | --- |
+| ✅ Tested | Code agrees with an established expectation, and an existing test asserts it. Say whether that test was run. |
+| 🟡 Untested | Established expectation appears satisfied and can be automated, but no test covers it. |
+| 🔴 Bug | Code demonstrably contradicts a user-confirmed or documented expectation; cite both. |
+| ⚪ Out of scope | The user excluded this case. |
+| ❓ Open | Requirement or current behavior is unresolved; includes suspected bugs based only on assumptions. |
+| 🔵 Manual | Established expectation has no practical automated check and needs manual verification; no known contradiction. |
 
-Read the feature's code and its existing tests. Then state its contract in a few lines:
+Keep these categories mutually exclusive. Known incorrect behavior is Bug even if checked manually. Do not call a test passing without running it.
 
-- **Inputs:** what it takes, and from where.
-- **Outputs:** what it returns, renders or writes.
-- **State:** what it reads or changes (database, cache, files, session).
-- **Dependencies:** services, the clock, randomness, other modules it calls.
-- **Invariants:** what must always be true ("a cart total is never negative").
-
-Ask the user to confirm or correct the contract before going further. Every question after this is measured against it.
-
-## 2. Find the cases
-
-Read [references/lenses.md](references/lenses.md). Run the feature through each lens and write down every case that could plausibly happen. Skip lenses that don't apply.
-
-Then go through [references/checklist.md](references/checklist.md) for every feature: the Frontend list if it has a UI, the Backend list if it runs on a server, and both if it does both. For anything else, such as a library or a CLI, take the items from either list that fit. Add every item that isn't already on your list.
-
-For each case, work out from the code what happens now and whether a test covers it. Rank the cases by likelihood × impact: cases that are likely and would lose data, money or access come first.
-
-Keep this list to yourself. The user sees it one question at a time.
-
-## 3. Ask, one at a time
-
-Ask each question in this form:
-
-```
-What if <scenario>?
-
-Right now: <what the code does, with file:line>, or "I can't tell from the code".
-Tested: <test name>, or no.
-
-What should happen?
-```
-
-The user answers with the expected behavior, "don't care" or "not sure". Then:
-
-- Add the case to the ledger with a status.
-- If the answer changes the contract, say so and update it.
-- If the answer suggests a related case, add it to your list.
-
-Don't argue with the answer. If it contradicts something the user said earlier, point out the conflict once and let them pick.
-
-Stop after about 15–20 questions and offer another round. Also stop when the user says so or you run out of cases.
-
-## 4. Keep the ledger
-
-Give every case one status:
-
-- ✅ **Tested:** the code does the expected thing and a test proves it.
-- 🟡 **Untested:** the code seems to do the expected thing, but no test covers it.
-- 🔴 **Bug:** the code does something other than what the user expects.
-- ⚪ **Out of scope:** the user decided it doesn't matter.
-- ❓ **Open:** the user isn't sure. This is usually a missing requirement, not a missing test.
-- 🔵 **Manual:** an automated test can't cover it well, so it needs checking by hand. Examples: zoom, a throttled connection, reduced motion, disabled hardware acceleration. If the code clearly gets it wrong, mark it 🔴 instead.
-
-Show the ledger every 5 questions or so, and whenever the user asks. Keep it in the chat; don't write it to a file.
-
-## 5. Report
-
-Use this format:
-
-```
-## What if: <feature>
-
-<n> cases: <n> ✅, <n> 🟡, <n> 🔴, <n> 🔵, <n> ⚪, <n> ❓
-
-| # | What if… | Expected | Now | Status |
-|---|----------|----------|-----|--------|
-| 1 | the code is applied twice | rejected with "already applied" | stacks the discount (cart.ts:42) | 🔴 |
-| 2 | the code expires during checkout | honored until payment | honored | 🟡 |
-```
-
-Then list:
-
-- **Bugs:** the 🔴 cases, one line each with the behavior the user expects. Suggest running `/use-tdd` on each one so it gets a failing test before the fix.
-- **Tests to write:** the 🟡 cases as test names, grouped by test file or suite. Name each test after its scenario ("honors a code that expires mid-checkout").
-- **Manual checks:** the 🔵 cases as steps to do by hand, each with what to look for ("Zoom to 200%: the submit button stays on screen with no horizontal scrolling").
-- **Open questions:** the ❓ cases, worded so the user can take them to whoever owns the requirement.
-
-Ask whether the user wants you to write the tests. Don't start on your own.
-
-## Testing best practices
-
-Use these to pick cases and to shape the tests you propose.
-
-- **Test the contract, not the implementation.** A test should survive a refactor that doesn't change behavior.
-- **Partition, then hit the edges.** Split inputs into groups that should behave the same, test one from each group, then test the boundaries between groups.
-- **Many small variations → one table-driven test.** A table of inputs and expected outputs beats ten near-identical tests.
-- **Invariants → a property-based test.** When a rule holds for every input ("the total is never negative"), generate inputs instead of listing them.
-- **One behavior per test**, named after the scenario it covers.
-- **Validate at the edge, trust the inside.** Test what can arrive from users, the network and storage. Don't test states that internal code can't produce.
-- **Mock only real boundaries:** the network, the clock, randomness, the filesystem. Inject the clock so time cases are testable.
-- **Every bug gets a regression test** that fails before the fix.
+End with the plan and relevant `/use-tdd` suggestions. Offer implementation only if it has not already been requested.
