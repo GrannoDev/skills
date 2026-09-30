@@ -21,15 +21,16 @@ Run `git fetch origin`, `git branch --show-current`, and `git status --short`.
 
 - Production: `main` if local or on origin, otherwise `master`; stop if neither exists.
 - Source: the named branch, otherwise the starting feature/bug branch, otherwise `develop` when starting on production or develop. Report `Releasing <source> → <prod>`.
+- If the starting branch is not `develop`, ask “Should `develop` be included in this release?” and wait for the answer before merging. Reuse an explicit choice already provided. When starting on `develop`, include it automatically. If the user declines, release only the chosen source; if that source is `develop`, ask for another source before continuing.
 - Uncommitted work: list it; it is included in the release commit except local runtime data/secrets/build output described below.
 - Maven: `./mvnw` when present, otherwise `mvn`.
-- When source is develop, fast-forward it: `git pull --ff-only` if currently there, otherwise `git fetch origin develop:develop`.
+- When develop is included, fast-forward it: `git pull --ff-only` if currently there, otherwise `git fetch origin develop:develop`.
 
 ## 2. Merge into production
 
 Run `git checkout <prod>` and `git pull --ff-only`. Stop if dirty work prevents checkout; do not stash or discard it.
 
-Before merging, read the root project's own version (not its parent version) from production `pom.xml` and `<source>:pom.xml`. Then `git merge --no-edit <source>`. For permitted version conflicts, keep the **source** side.
+Before merging, read the root project's own version (not its parent version) from production `pom.xml` and `<source>:pom.xml`. If develop is included and differs from source, first run `git merge --no-edit develop`. Then `git merge --no-edit <source>`. Merge each branch only once. For permitted version conflicts, keep the **incoming branch** side.
 
 ## 3. Choose and set the version
 
@@ -60,6 +61,7 @@ Show this concrete summary and wait for authorization unless already supplied:
 ```text
 Release <version> → <prod>
 Source: <branch>
+Develop included: <Yes/No>
 Commit: <hash> chore(release): <version>
 Files: <changed release files>
 Excluded: <paths, or None.>
