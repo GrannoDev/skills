@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Review uncommitted changes, propose a conventional commit message, and commit the agreed scope when authorized.
+description: Review uncommitted changes, propose a conventional commit message, and commit the agreed scope. Use when asked to commit or to write a commit message.
 argument-hint: "[-y]"
 ---
 
