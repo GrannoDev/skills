@@ -14,7 +14,7 @@ Save reusable project instructions between `<!-- setup-project:start -->` and `<
 - **Default:** show and confirm Running the app, Verifying changes, and Tests in that order. If the user requests a change, ask only about the affected parts, revise, and show the section again.
 - **`-q`:** show the whole draft and confirm once.
 
-Include the draft in the confirmation prompt so the user can review it. Use an available question tool when suitable. Reuse choices and authorization already provided by the user.
+Before every confirmation, print the section or draft being confirmed as inline markdown in your message, then ask. Never call a question tool before the user can see what they are confirming; keep the question itself short and do not rely on it to carry the draft. Use an available question tool when suitable. Reuse choices and authorization already provided by the user.
 
 ## 1. Inspect
 
