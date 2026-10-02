@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # Blueprint
 
-Write `.blueprints/<slug>.md` using [references/blueprint-template.md](references/blueprint-template.md). Plan only; do not implement the feature.
+Write `.blueprints/<slug>/PLAN.md` using [references/blueprint-template.md](references/blueprint-template.md). Plan only; do not implement the feature.
 
 ## Modes
 
@@ -16,9 +16,11 @@ Write `.blueprints/<slug>.md` using [references/blueprint-template.md](reference
 
 Show the draft being reviewed with each confirmation. Ask only for information the request and repo do not answer.
 
+**Plannotator:** if `command -v plannotator` succeeds, use it for the full-draft reviews (quick-mode approval and step 7): run `plannotator annotate .blueprints/<slug>/PLAN.md --gate --json` and wait for it. `approved` counts as explicit approval; carry any approval notes into the plan. `annotated` means address the feedback, save, and reopen. `dismissed` or an error falls back to asking in chat. Otherwise review in chat.
+
 ## Workflow
 
-1. **Select the feature.** Infer it from the request or ask. Choose a kebab-case slug. Resume an existing draft from its first unconfirmed section; ask before replacing a blueprint with another status. Record confirmed sections under `confirmed_sections` so another session can resume.
+1. **Select the feature.** Infer it from the request or ask. Choose a kebab-case slug. Resume an existing draft (or a legacy `.blueprints/<slug>.md`, moving it to `.blueprints/<slug>/PLAN.md`) from its first unconfirmed section; ask before replacing a blueprint with another status. Record confirmed sections under `confirmed_sections` so another session can resume.
 2. **Prepare storage.** Keep `.blueprints/` locally gitignored. Check with `git check-ignore`; if needed, append `.blueprints/` to the common git directory's `info/exclude` and report it. In a non-git directory, skip the exclusion and say so.
 3. **Pin the scope.** Write the goal, non-goals, and constraints. For a new file, set `status: draft`, today's date, and `base_branch` to the repo's default branch (or note that it could not be determined). Preserve existing metadata when resuming.
 4. **Explore.** Inspect nearby models and migrations, API conventions, tests and fixtures, and integration/UI touch points. Record relevant file paths and conventions in Context. Explore yourself or use read-only subagents when available.

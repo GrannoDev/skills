@@ -1,6 +1,6 @@
 ---
 name: blueprint-clean
-description: Delete completed .blueprints/ files and report remaining plans with status and progress. Run only when invoked by name.
+description: Delete completed .blueprints/ plans and report remaining plans with status and progress. Run only when invoked by name.
 argument-hint: "[-y]"
 disable-model-invocation: true
 ---
@@ -11,10 +11,10 @@ Remove only blueprints with `status: done`. These files are usually gitignored; 
 
 ## Workflow
 
-1. List `.blueprints/*.md`. If missing or empty, report that and stop.
+1. List `.blueprints/*/PLAN.md` and legacy `.blueprints/*.md`. If none exist, report that and stop.
 2. Read each file's title, slug, frontmatter status, modification date, checked/total steps under Implementation steps, and unresolved Open questions (`None.` means zero).
 3. Separate `done`, unfinished (`draft`, `approved`, `building`), and unreadable/unknown-status files. Never delete the last two groups.
-4. Show the done files and ask for confirmation unless `-y` or an earlier instruction already authorizes their deletion. Keep any files the user wants as documentation. Delete exactly the authorized list.
+4. Show the done plans, naming any other files in their `.blueprints/<slug>/` directories, and ask for confirmation unless `-y` or an earlier instruction already authorizes their deletion. Keep any files the user wants as documentation. Delete exactly the authorized list: the `<slug>/` directory, or the legacy file.
 
 ## Output
 

@@ -11,7 +11,7 @@ Use the blueprint as the feature contract; inspect current repo instructions and
 
 ## Load and prepare
 
-1. Read the requested path or `.blueprints/<slug>.md`. Without an argument, use the only `approved` or `building` blueprint; ask if several match. If none match, suggest `/blueprint`.
+1. Read the requested path or `.blueprints/<slug>/PLAN.md` (fall back to a legacy `.blueprints/<slug>.md`). Without an argument, use the only `approved` or `building` blueprint; ask if several match. If none match, suggest `/blueprint`.
 2. Reject `draft`, unknown status, or unresolved Open questions. For `done`, ask what should be rebuilt. Start `approved` at step 1; resume `building` at the first unchecked step, verifying that checked steps still exist and pass.
 3. Inspect `git status --short`. Preserve existing work; ask only if unrelated changes overlap the implementation or make its scope unclear. If on `base_branch`, offer `feat/<slug>` unless the user already chose a branch.
 4. Read Context files and applicable repo instructions. Ask about drift that changes a model, API, decision, or invariant. Routine renames can be recorded as deviations.

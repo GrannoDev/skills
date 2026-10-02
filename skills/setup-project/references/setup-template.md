@@ -26,7 +26,7 @@ Never: <off-limits environments/actions>
 Required checks:
 - `<command>` (`<dir>`) — <when required and what it checks>
 
-UI verification: <tool, when required, affected-flow checks, fallback>
+UI verification: <when required, target (browser URL, simulator, emulator), affected-flow checks, what to do if it cannot be done; no agent-specific tool names>
 
 ### Auth
 
