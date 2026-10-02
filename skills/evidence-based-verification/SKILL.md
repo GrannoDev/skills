@@ -61,3 +61,11 @@ Limitations: <missing evidence, failed checks, or unverified behavior and reason
 ```
 
 Distinguish observed results from expectations. Report incomplete verification directly; never claim a capture, test run, or successful outcome that did not occur.
+
+## Retain evidence until reviewed
+
+For evidence not attached to a pull request, end the report with: "Please confirm when you have watched or reviewed the evidence so I can remove the temporary evidence files."
+
+Keep those artifacts until the user explicitly confirms review in response to that request. Do not treat silence, task completion, or a request to commit or push as confirmation. After confirmation, remove only the temporary evidence artifacts created for this task and report what was removed. Preserve regression tests, source files, and unrelated artifacts.
+
+Retain evidence attached to a PR and any files needed to keep its links working. Do not request review confirmation for cleanup of that evidence. For a report containing both PR-attached and temporary evidence, identify which temporary artifacts the confirmation covers. A planned attachment is not an attachment; verify that the PR evidence is accessible before treating it as retained there.

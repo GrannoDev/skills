@@ -22,6 +22,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [blueprint-build](skills/blueprint-build/SKILL.md) | Builds an approved blueprint tests-first and records how it works, verification and deviations. |
 | [blueprint-clean](skills/blueprint-clean/SKILL.md) | Deletes finished blueprints and lists the ones still in progress. |
 | [break-ui](skills/break-ui/SKILL.md) | Exercises a UI in a browser, simulator or emulator and reports ranked, reproduced bugs; delegates when available. |
+| [bug-hunter](skills/bug-hunter/SKILL.md) | Hunts correctness and security bugs across UI, APIs and persistence, reproduces findings and verifies requested fixes with evidence. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
 | [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Verifies features and bugfixes with before-and-after evidence and a concise Why / How report. |
@@ -55,6 +56,7 @@ Keep the workflow in `SKILL.md` and define recurring deliverables in a linked te
 | Project instructions | [Project setup](skills/setup-project/references/setup-template.md) |
 | Edge-case ledger and test plan | [What-if report](skills/what-if/references/report-template.md) |
 | Reproduced UI bugs | [UI bug report](skills/break-ui/references/report-template.md) |
+| Cross-layer bug hunt | [Bug hunt report](skills/bug-hunter/references/report-template.md) |
 | Change summary and commit message | [Commit output](skills/commit/references/commit-template.md) |
 
 When revising a skill, check its default mode, each flag and its resume/failure path. Preserve invocation policy and authorization boundaries. A template makes the output shape repeatable; evidence requirements and explicit decision rules make its content more reliable.
