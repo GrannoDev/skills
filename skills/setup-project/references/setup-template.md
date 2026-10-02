@@ -26,6 +26,8 @@ Never: <off-limits environments/actions>
 Required checks:
 - `<command>` (`<dir>`) — <when required and what it checks>
 
+Before committing or pushing: remove leftover and temporary files you created (scratch scripts, debug logs, screenshots, temporary test data<, plus repo-specific temp locations>). Leave files you did not create.
+
 UI verification: <when required, target (browser URL, simulator, emulator), affected-flow checks, what to do if it cannot be done; no agent-specific tool names>
 
 ### Auth
