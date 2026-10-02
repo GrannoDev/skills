@@ -24,6 +24,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [break-ui](skills/break-ui/SKILL.md) | Exercises a UI in a browser, simulator or emulator and reports ranked, reproduced bugs; delegates when available. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
+| [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Verifies features and bugfixes with before-and-after evidence and a concise Why / How report. |
 | [setup-project](skills/setup-project/SKILL.md) | Drafts how to run the app, verify changes (auth and test accounts) and which tests to write, has you confirm or change each section, then saves it to AGENTS.md. |
 | [start-project](skills/start-project/SKILL.md) | Starts the project's services in order from the `/setup-project` setup, waits until each is ready, and reports URLs and logs. |
 | [stop-project](skills/stop-project/SKILL.md) | Stops selected project services in reverse order, verifies process ownership and keeps data. |
