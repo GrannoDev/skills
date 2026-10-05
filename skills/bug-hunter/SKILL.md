@@ -1,25 +1,25 @@
 ---
 name: bug-hunter
-description: Reproduce correctness and security bugs across UI, APIs, and persistence. Use for feature hunts, permission checks, retries, concurrency, and verifying reported bugs; excludes cosmetic review.
+description: Find and reproduce feature bugs in the user's project across UI, APIs, and stored state. Use for functional testing, test-account permission checks, retries, concurrency, and reported bugs; excludes cosmetic review.
 ---
 
 # Bug hunter
 
-Hunt/report by default; implement fixes only when requested.
+Find and report bugs. Implement fixes only when requested.
 
-## Scope and probes
+## Scope and checks
 
-1. Identify feature, environment, revision, test identities, and permitted effects. Without a feature, prioritize high-impact workflows and state the selected coverage.
-2. Use local/test targets and disposable records. Live/shared targets and effects require authorization. Control payment/message/callback dependencies. Bound retries/concurrency; stop probes affecting unrelated data, incurring unexpected costs, or destabilizing the target.
-3. Map UI action, API operation, durable state, and external effects. Identify actors, roles, tenants, ownership, transitions, and invariants. Derive expectations from requirements/contracts; flag ambiguous product rules.
-4. Load [evidence-based-verification](../evidence-based-verification/SKILL.md), locating it by name if installed separately. If unavailable, disclose it and still save reproducible before/after checks and Why/How explanations.
-5. Choose relevant [checklist probes](references/bug-checklist.md), prioritizing trust boundaries and persistent/irreversible effects. Establish valid behavior, then vary actors, inputs, order, timing, and failures. Use separate identity sessions; compare allowed/forbidden API requests against controlled records. Hidden UI controls do not prove server authorization.
-6. Observe responses and independently reread durable state. Rejected writes must leave protected state unchanged. Respect documented eventual-consistency behavior. For races, record small coordinated overlaps and final state; for retries, test committed writes with lost responses. Record intermittent successes/attempts.
+1. Identify the feature, environment, revision, test accounts, and permitted effects. State selected workflows and coverage. Use requirements and contracts for expected behavior; flag ambiguous rules.
+2. Use the user's local project or authorized test environment with disposable records and controlled dependencies. Live/shared testing needs authorization for the target and effects. Stop unexpected costs, disruption, or effects on unrelated data.
+3. Default to functional testing. Check permissions with normal app operations and controlled test accounts. Broader security testing needs an explicitly scoped request. Report Codex blocks and continue permitted checks; never switch tools or rephrase an action to bypass a block.
+4. Map UI actions, API operations, stored state, and external effects. Choose relevant [checks](references/bug-checklist.md). Establish valid behavior, then vary inputs, accounts, ordering, timing, and failures. Hidden buttons do not prove API permission enforcement.
+5. Observe responses and independently reread stored state. Denied writes must leave protected state unchanged. Respect documented eventual consistency. Coordinate small overlaps for races; simulate lost responses after commits for retries. Record intermittent reproduction frequency.
+6. Load [evidence-based-verification](../evidence-based-verification/SKILL.md), locating it by name if needed. If unavailable, disclose it and save reproducible checks with Why/How explanations. Remove secrets from evidence.
 
 ## Findings and requested fixes
 
-Reduce findings to exact reproductions; preserve failing evidence. Separate runtime-confirmed defects from code-only suspicions. Merge duplicates with the same demonstrated cause. Rank concrete impact separately from confidence: Critical for broad compromise/widespread loss; High for unauthorized access, substantial corruption, or core-flow failure; Medium for bounded recoverable failures; Low for minor defects.
+Preserve the smallest failing reproduction. Separate observed defects from code-only suspicions; merge findings with the same demonstrated cause. Rank impact separately from confidence: Critical for demonstrated widespread loss; High for unauthorized access, substantial corruption, or core-flow failure; Medium for bounded recoverable failures; Low for minor defects.
 
 Track `Reproduced`, `Suspected`, `Fixed and verified`, or `Fix not verified`. For requested fixes, rerun the original scenario, nearby allowed/forbidden cases, invariants, and required checks. Preserve legitimate behavior. Code changes or unrelated passing tests do not verify a fix.
 
-Use [the report](references/report-template.md), with linked evidence and coverage gaps. Without a fix, after evidence is not applicable. Continue accessible-layer checks when another layer is blocked. Finish selected probes/fix verification within any user budget; explain blockers. With zero findings, report tested scope rather than claiming security or bug-free behavior.
+Use [the report](references/report-template.md) with evidence and coverage gaps. Without a fix, after evidence is not applicable. Finish selected checks within the user's budget; explain blockers. With zero findings, report the tested scope.

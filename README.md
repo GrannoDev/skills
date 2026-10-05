@@ -22,7 +22,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [blueprint-build](skills/blueprint-build/SKILL.md) | Builds an approved blueprint tests-first and records how it works, verification and deviations. |
 | [blueprint-clean](skills/blueprint-clean/SKILL.md) | Deletes finished blueprints and lists the ones still in progress. |
 | [break-ui](skills/break-ui/SKILL.md) | Exercises a UI in a browser, simulator or emulator and reports ranked, reproduced bugs; delegates when available. |
-| [bug-hunter](skills/bug-hunter/SKILL.md) | Hunts correctness and security bugs across UI, APIs and persistence, reproduces findings and verifies requested fixes with evidence. |
+| [bug-hunter](skills/bug-hunter/SKILL.md) | Reproduces feature bugs across UI, APIs and stored state using controlled test data, then verifies requested fixes with evidence. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
 | [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Saves structured before-and-after evidence, readable UI videos, reproducible checks, and a concise Why / How report. |

@@ -1,6 +1,6 @@
 # Bug hunt report
 
-Start with target, revision, scope, and reproduced/verified counts. Rank confirmed findings, then suspicions. Keep Why/How short and supported by evidence.
+Start with target, revision, test accounts/data, permitted effects, and reproduced/verified counts. Rank confirmed findings, then suspicions. Keep Why/How short and supported by evidence.
 
 ```text
 <ID> <severity> <failure>
