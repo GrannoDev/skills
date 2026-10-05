@@ -1,27 +1,18 @@
 # Build summary
 
-Use this body under the blueprint's `## Summary` heading and in the final response. Keep file references specific; report actual check results rather than claiming “tested”. Empty Deviations and Follow-ups sections say `None.`.
+Use under `## Summary` and in the final response. Link real files and observed results. Empty sections say `None.`.
 
 ```markdown
 ### How it works
-1. <Main flow through the real code, with file:line references.>
-
+<Main flow with file:line references>
 ### Why it works this way
-- <Decision and reason.>
-- <Invariant: enforcement location and test that proves it.>
-
+<Decisions and invariants, with enforcement locations and proving tests>
 ### Files
-- New: `<path>` — <purpose>
-- Changed: `<path>` — <behavior changed>
-- Tests: `<path>` — <scenarios covered>
-
+<New, changed, and test files with their purposes>
 ### Verification
-- `<command>` — <passed / failed / not run, with reason>
-- Failing-before evidence: <regression test and failure, or why unavailable>
-
+<Exact commands and passed/failed/not-run results; failing-before evidence or missing-baseline reason>
 ### Deviations
-- Step <n>: <departure and reason>
-
+<Step, departure, reason>
 ### Follow-ups
-- <Remaining work, limitation, or blocker.>
+<Remaining work, limitation, blocker>
 ```

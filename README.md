@@ -25,8 +25,8 @@ npx skills add GrannoDev/skills --skill <name>
 | [bug-hunter](skills/bug-hunter/SKILL.md) | Hunts correctness and security bugs across UI, APIs and persistence, reproduces findings and verifies requested fixes with evidence. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
-| [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Verifies features and bugfixes with before-and-after evidence and a concise Why / How report. |
-| [setup-project](skills/setup-project/SKILL.md) | Drafts how to run the app, verify changes (auth and test accounts) and which tests to write, has you confirm or change each section, then saves it to AGENTS.md. |
+| [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Saves structured before-and-after evidence, readable UI videos, reproducible checks, and a concise Why / How report. |
+| [setup-project](skills/setup-project/SKILL.md) | Confirms startup, verification, test commands, and auth setup, then saves them in AGENTS.md. |
 | [start-project](skills/start-project/SKILL.md) | Starts the project's services in order from the `/setup-project` setup, waits until each is ready, and reports URLs and logs. |
 | [stop-project](skills/stop-project/SKILL.md) | Stops selected project services in reverse order, verifies process ownership and keeps data. |
 | [use-tdd](skills/use-tdd/SKILL.md) | Fixes a bug test-first: a focused regression test that fails before the fix and passes after. |
@@ -45,7 +45,7 @@ skills/<name>/
 
 `name` must match the folder name. `description` says what the skill does and when to use it; agents read it to decide when to load the skill.
 
-Keep the workflow in `SKILL.md` and define recurring deliverables in a linked template. Keep short output formats inline. Templates specify required fields, evidence and empty-section behavior; examples should not supply unrelated business rules.
+Keep instructions short and specific: exact inputs, actions, outputs, and failure/resume rules. Define recurring deliverables in a compact linked template; keep short output formats inline. Remove duplicated guidance and generic advice.
 
 ## Output templates
 
@@ -57,6 +57,7 @@ Keep the workflow in `SKILL.md` and define recurring deliverables in a linked te
 | Edge-case ledger and test plan | [What-if report](skills/what-if/references/report-template.md) |
 | Reproduced UI bugs | [UI bug report](skills/break-ui/references/report-template.md) |
 | Cross-layer bug hunt | [Bug hunt report](skills/bug-hunter/references/report-template.md) |
+| Before-and-after verification | [Evidence report](skills/evidence-based-verification/references/report-template.md) |
 | Change summary and commit message | [Commit output](skills/commit/references/commit-template.md) |
 
 When revising a skill, check its default mode, each flag and its resume/failure path. Preserve invocation policy and authorization boundaries. A template makes the output shape repeatable; evidence requirements and explicit decision rules make its content more reliable.

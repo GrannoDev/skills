@@ -1,65 +1,39 @@
 # Project setup template
 
-Use the same structure for review and for the saved `AGENTS.md` block. Replace placeholders with detected/confirmed values, omit inapplicable rows, and use `None.` for empty lists. Commands include their working directory. Unknown values say `Unresolved: <what is needed>`; unchecked facts say *(unverified)*.
+Use for review and saved output. Include working directories; omit inapplicable rows. Unknown facts say `Unresolved`; unchecked facts say *(unverified)*. Use agent-neutral wording.
 
 ```markdown
 <!-- setup-project:start -->
 ## Running the app
 
-Prerequisites: <tool versions, env files, and secret sources; no secret values>
+Prerequisites: <versions, env files, secret sources without values>
 
-Services in dependency order:
-
-| Service | Started by | Start (directory) | Ready when | URL | Stop (keeps data) |
+| Service, dependency order | Started by | Start (directory) | Ready check/timeout | URL | Stop, keeps data |
 | --- | --- | --- | --- | --- | --- |
-| <name> | <agent / user> | `<command>` (`<dir>`) | <check and timeout> | <URL> | `<command>` or Ctrl+C |
+| <service> | <agent/user> | <command> | <check> | <URL> | <command> |
 
-Data:
-- Migrations: <how and when they run>
-- Seed: <command and directory, or None.>
-- Reset (destructive; requires explicit authorization): <procedure, or None.>
-
+Migrations: <command and when>
+Seed: <command or None>
+Reset: <procedure requiring explicit authorization, or None>
 Never: <off-limits environments/actions>
 
 ## Verifying changes
 
-Required checks:
-- `<command>` (`<dir>`) — <when required and what it checks>
-
-Before committing or pushing: remove leftover and temporary files you created (scratch scripts, debug logs, screenshots, temporary test data<, plus repo-specific temp locations>). Leave files you did not create.
-
-UI verification: <when required, target (browser URL, simulator, emulator), affected-flow checks, what to do if it cannot be done; no agent-specific tool names>
-
-### Auth
-
-Type: <none / login method>
-Test accounts: <existing source or local-only .agents/test-accounts.md>
-Roles: <relevant roles>
-API token: <enabled grant/command using credential placeholders, or None.>
-Blockers: <missing accounts, MFA, external SSO, etc.; workaround or None.>
+Required checks: <exact commands, directories, conditions>
+Before commit/push: remove temporary files you created, preserving evidence awaiting review or supporting PR links; leave others' files alone. Temporary locations: <paths>.
+UI verification: <when, target, affected flows, unavailable-tool fallback>
+Auth: <method, account source, roles, enabled token command with placeholders>
+Blockers: <missing accounts, MFA, SSO; workaround or None>
 
 ## Tests
 
-| Kind | Write / run only / leave alone | Run all (directory) | Run one (directory) | Needs |
+| Kind | Write/run/leave alone | Run all (directory) | Run one (directory) | Needs |
 | --- | --- | --- | --- | --- |
-| <kind> | <policy> | `<command>` (`<dir>`) | `<command>` (`<dir>`) | <dependencies> |
+| <kind> | <policy> | <command> | <command> | <dependencies> |
 
-Conventions: <frameworks, locations, naming, boundaries to mock, reusable fixtures>
-Skip by default: <suite and when to run it anyway, or None.>
+Conventions: <framework, paths, naming, fixtures, mocks>
+Skip by default: <suite and exception, or None>
 <!-- setup-project:end -->
 ```
 
-## Local test accounts
-
-Only create `.agents/test-accounts.md` after confirming it is untracked and gitignored. Reference existing credentials instead when available.
-
-```markdown
-# Test accounts
-
-Environment: <local/dev/staging URL>
-Local only; not committed. Each developer keeps their own copy.
-
-| Role | Username / email | Password | Notes |
-| --- | --- | --- | --- |
-| <role> | <test username> | <test password> | <restrictions> |
-```
+For new credentials, use an untracked, ignored `.agents/test-accounts.md` containing the environment URL and `Role | Username/email | Password | Notes` table. State that it is local only and each developer supplies their own copy.

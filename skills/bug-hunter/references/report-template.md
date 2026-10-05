@@ -1,27 +1,18 @@
 # Bug hunt report
 
-Start with the target, revision or working state, tested scope, and counts of reproduced findings and verified fixes. List findings in impact order. Keep Why and How to one or two sentences each; link detailed output rather than pasting full logs.
-
-For each finding:
+Start with target, revision, scope, and reproduced/verified counts. Rank confirmed findings, then suspicions. Keep Why/How short and supported by evidence.
 
 ```text
-<ID> <severity> <short title>
+<ID> <severity> <failure>
 Status: <Reproduced | Suspected | Fixed and verified | Fix not verified>
-Why: <concrete user or security impact and relevant prerequisites>
-How: <observed trigger and supported cause; describe the fix if made>
-Reproduce: <actor, ownership, starting state, input, and exact steps or command>
-Expected: <required behavior and its source>
-Actual: <observed response and resulting persistent or external effects>
-Evidence before: <capture or check-output links and observation>
-Evidence after: <comparable links and observation, or not applicable / unavailable with reason>
-Checks: <original reproduction and relevant regression results; frequency if intermittent>
+Why: <impact and prerequisites>
+How: <observed trigger/cause; fix if made; unknown if unsupported>
+Reproduce: <actor, ownership, starting state, input, exact steps/request>
+Expected: <contract and source>
+Actual: <response, durable state, external effects>
+Before: <artifact links and observations>
+After: <comparable links, or unavailable/not applicable with reason>
+Checks: <commands/results; intermittent successes/attempts>
 ```
 
-Do not invent a root cause for How. State when the cause is unknown and explain the demonstrated trigger instead. Separate suspected issues from confirmed findings and identify what would confirm or dismiss them.
-
-End with a compact coverage table:
-
-| Flow or invariant | Actors and layers exercised | Result or evidence | Gap |
-| --- | --- | --- | --- |
-
-Include blocked, skipped, or incomplete checks and why. If there are no confirmed findings, say "No bugs reproduced in the tested scope" and retain the coverage table. Omit an empty suspicions section. For multiple fixes, provide a short overall Changed / Why / How summary following evidence-based-verification without duplicating each finding.
+End with `Flow/invariant | Actors/layers | Result/evidence | Gap` coverage. Include blocked/skipped checks. With zero findings, say "No bugs reproduced in the tested scope." Omit empty suspicions; link the evidence package rather than duplicating it.

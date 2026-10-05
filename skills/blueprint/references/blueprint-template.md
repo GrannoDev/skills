@@ -1,75 +1,40 @@
 # Blueprint template
 
-Keep the headings and status values below: the build and cleanup skills use them. Replace placeholders with repo-specific content. Write `None.` for empty sections. Do not leave example business rules or unresolved placeholders in an approved blueprint.
-
-The file must stand alone in a fresh session: name real files, specify observable behavior, and avoid “as discussed”.
+Preserve these headings and metadata for build/resume/cleanup. Replace fields with concrete behavior and real paths. Empty sections say `None.`; approved plans have no unresolved placeholders.
 
 ```markdown
 ---
-title: <feature title>
+title: <feature>
 slug: <kebab-case slug>
 status: draft
 created: <YYYY-MM-DD>
-base_branch: <default branch, or unknown>
+base_branch: <default branch or unknown>
 confirmed_sections: []
 ---
-
-# <feature title>
+# <feature>
 
 ## Goal
-<What the user can do when this ships. Include constraints.>
-
+<Observable outcome and constraints>
 ## Non-goals
-- <Explicitly excluded work.>
-
+<Excluded work>
 ## Context
-- `<path>`: <relevant types, behavior, and conventions>
-- Tests: <framework, fixtures, locations, focused and required commands>
-
+<Relevant files, conventions, test fixtures, focused and required commands>
 ## Domain models
-<New/changed entities: fields, types, relationships, migrations, invariants.>
-<An erDiagram when there are entity relationships; otherwise explain why none applies.>
-
+<Fields, types, relationships, migrations, invariants; ER diagram if relationships exist>
 ## APIs
-<For each endpoint/function/event: signature, auth, inputs, outputs,
-validation, errors, and side effects. Say “None.” if no interface changes.>
-
+<Signatures, auth, inputs, outputs, validation, errors, side effects; None if unchanged>
 ## Data flow
-<A sequenceDiagram or flowchart for the main paths, followed by a
-numbered walkthrough including failure handling and transaction boundaries.>
-
+<Sequence diagram or flowchart, plus a walkthrough of failures and transactions>
 ## Logic to test
-**<test file or suite>**
-- <Scenario → expected result; identify the rule or error path covered.>
-
+<Test file/suite: concrete scenario and expected result>
 ## Implementation steps
-- [ ] 1. <Concrete change, with its tests. Verify: exact command or observable check.>
-
+- [ ] 1. <Change paired with tests. Verify: exact command or observable check.>
 ## Decisions
-- **<Choice>**: <reason>. Alternative: <other choice and why it was rejected>.
-
+<Choice, reason, rejected alternative>
 ## Open questions
 None.
 ```
 
-## Planning progress
+Steps must be independently verifiable and keep required checks passing. Explain diagrams in prose. `confirmed_sections` records exact approved headings, including Goal and Non-goals.
 
-`confirmed_sections` contains the exact headings approved by the user, including Goal and Non-goals when scope is confirmed. It records section review, not final blueprint approval. In quick mode, leave it empty until the user approves the draft. For older drafts without this field, ask which section to resume rather than inferring approval from populated text.
-
-## Build fields and sections
-
-`/blueprint-build` adds `base_sha` on the first build and preserves it on resume. It appends these sections:
-
-```markdown
-## Deviations
-- Step <n>: <change or skipped check, reason, and approval if required>
-
-## Summary
-<Use the blueprint-build summary template.>
-```
-
-Statuses: `draft` → `approved` → `building` → `done`. Only user approval permits `approved`; only completed steps and successful required verification permit `done`. Open questions block a build even if the status says approved.
-
-Keep diagrams focused on this feature. Use an ER diagram for relationships, a sequence diagram for component interactions, and a flowchart for branching logic. Explain them in prose so the blueprint is usable without Mermaid rendering.
-
-Cover relevant invariants, validation, state changes, time boundaries, and error paths in Logic to test. Keep implementation steps independently verifiable, pairing tests with their code and ordering work so the build and required checks pass after each step.
+Build adds `base_sha`, `## Deviations`, and `## Summary`. Statuses are `draft`, `approved`, `building`, `done`. User approval permits `approved`; completed required steps/checks permit `done`. Open questions block building regardless of status.

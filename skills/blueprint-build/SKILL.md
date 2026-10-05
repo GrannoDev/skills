@@ -1,35 +1,27 @@
 ---
 name: blueprint-build
-description: Implement an approved .blueprints/ plan step by step, tests first, and record verification and deviations. Run only when invoked by name.
+description: Implement an approved .blueprints/ plan tests-first, saving step progress, verification, and deviations. Run only when invoked by name.
 argument-hint: "[slug or path]"
 disable-model-invocation: true
 ---
 
-# Blueprint Build
+# Blueprint build
 
-Use the blueprint as the feature contract; inspect current repo instructions and code for implementation details. Do not depend on the planning conversation.
+Treat the saved plan as the contract; use current repository instructions for implementation.
 
-## Load and prepare
+## Preflight
 
-1. Read the requested path or `.blueprints/<slug>/PLAN.md` (fall back to a legacy `.blueprints/<slug>.md`). Without an argument, use the only `approved` or `building` blueprint; ask if several match. If none match, suggest `/blueprint`.
-2. Reject `draft`, unknown status, or unresolved Open questions. For `done`, ask what should be rebuilt. Start `approved` at step 1; resume `building` at the first unchecked step, verifying that checked steps still exist and pass.
-3. Inspect `git status --short`. Preserve existing work; ask only if unrelated changes overlap the implementation or make its scope unclear. If on `base_branch`, offer `feat/<slug>` unless the user already chose a branch.
-4. Read Context files and applicable repo instructions. Ask about drift that changes a model, API, decision, or invariant. Routine renames can be recorded as deviations.
-5. On the first build, record `base_sha` from `git rev-parse HEAD`; preserve it on resume. Set `status: building` after preflight succeeds. Track this build's files separately from pre-existing changes.
+1. Read the requested plan or `.blueprints/<slug>/PLAN.md`, with legacy `.blueprints/<slug>.md` fallback. Without an argument, select the only `approved`/`building` plan; ask if several match. If none exist, suggest `/blueprint`.
+2. Reject draft/unknown statuses or unresolved Open questions. Ask what to rebuild for `done`. Start `approved` plans at step 1. Resume `building` at the first unchecked step after checking that completed steps still exist and pass.
+3. Inspect `git status --short` and Context files. Preserve unrelated work; clarify overlapping changes or drift affecting a model, API, decision, or invariant. Record routine renames as deviations. On `base_branch`, offer `feat/<slug>` unless a branch was already chosen.
+4. Record `base_sha` once from HEAD; preserve it on resume. Track this build's changes separately. Set `building` after preflight succeeds.
 
-## Implement each unchecked step
+## Build and finish
 
-1. Write the step's practical regression tests from Logic to test before production code. Run them and confirm they fail because the behavior is missing. If that is impractical, record why and the replacement check.
-2. Implement the step using the repo's conventions. Do not weaken assertions to fit incorrect behavior.
-3. Run its tests and specified verification. Tick and save the checkbox only after they pass.
+For each unchecked step, write practical regression tests first and demonstrate failure from missing behavior. Record a replacement check when tests are impractical. Implement without weakening assertions. Run the step's tests and verification, then tick and save its checkbox.
 
-Record each departure under `## Deviations`: step, change, and reason. Continue through mechanical adjustments. Ask before changing a planned model, API, decision, or invariant, unless that change is already authorized. Record omitted steps or tests; an unresolved required step remains unchecked.
+Record departures under `## Deviations`. Ask before changing planned models, APIs, decisions, or invariants unless already authorized. Unresolved required steps stay unchecked.
 
-## Verify and finish
+Run required plan/repository checks. Fix failures caused by this work; report unrelated failures. Compare implemented contracts, invariants, and tests with the plan. Add [the summary](references/summary-template.md), using the `base_sha` diff and untracked files while attributing only this build's work.
 
-- Run the blueprint's required checks and applicable repo checks, including the full suite, type check, lint, and build where required. Fix failures caused by this work; report unrelated failures with evidence.
-- Compare the implementation against all planned models, APIs, tests, steps, and invariants. Check that Deviations explains extra work. Review yourself or use a fresh read-only agent when available.
-- Write `## Summary` using [references/summary-template.md](references/summary-template.md). Use the diff from `base_sha` plus untracked files as evidence, but attribute only this build's changes.
-- Set `status: done` only when every required step and check is complete. Otherwise keep `building` and report the remaining work or blocker. Append the summary and show it to the user.
-
-End with the blueprint path and relevant next commands (`/what-if`, `/commit`). Commit, push, or open a PR only when requested.
+Set `done` only when all required steps/checks pass; otherwise retain `building` and report remaining work. Show the summary and plan path. Suggest `/what-if` or `/commit` when relevant; commit, push, or open a PR only when requested.

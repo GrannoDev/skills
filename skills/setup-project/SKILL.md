@@ -1,45 +1,30 @@
 ---
 name: setup-project
-description: Inspect a repo, confirm how to run and verify it, and save the setup in AGENTS.md. Run only when invoked by name.
+description: Confirm exact startup, verification, and test instructions, then save them in the root AGENTS.md. Run only when invoked by name.
 argument-hint: "[-q]"
 disable-model-invocation: true
 ---
 
-# Setup Project
+# Setup project
 
-Save reusable project instructions between `<!-- setup-project:start -->` and `<!-- setup-project:end -->` in the root `AGENTS.md`. Use [references/setup-template.md](references/setup-template.md) for the draft and saved output.
+Use [the setup template](references/setup-template.md). Save only the block between `<!-- setup-project:start -->` and `<!-- setup-project:end -->` in root `AGENTS.md`.
 
-## Modes and review
+## Inspect and review
 
-- **Default:** show and confirm Running the app, Verifying changes, and Tests in that order. If the user requests a change, ask only about the affected parts, revise, and show the section again.
-- **`-q`:** show the whole draft and confirm once.
+Read existing instructions, README, service/build/framework configs, environment examples, auth setup, migrations, and representative tests. Inspect files relevant to this stack. Extract exact commands, directories, service ownership/order, readiness checks, ports, and test conventions. Do not print secrets.
 
-Before every confirmation, print the section or draft being confirmed as inline markdown in your message, then ask. Never call a question tool before the user can see what they are confirming; keep the question itself short and do not rely on it to carry the draft. Use an available question tool when suitable. Reuse choices and authorization already provided by the user.
+Default: show and confirm Running the app, Verifying changes, and Tests in order. `-q`: show the entire draft and confirm once. Display the actual draft inline before asking; reuse prior answers. Mark proposed choices *(assumed)* and missing facts `Unresolved`; omit inapplicable rows. Re-review only affected sections.
 
-## 1. Inspect
+Specify:
 
-Use an existing setup as the starting point. Read applicable `AGENTS.md`/`CLAUDE.md`, README, service/container configs, build scripts, framework configs, version files, env examples, migrations, seed data, auth config, and representative tests. Inspect only files relevant to this stack.
+- Running: prerequisites; agent/user ownership; startup/readiness/data-preserving stop commands; migrations, seeds, authorized resets, and off-limits environments. Proposed default is agent-managed local services in dependency order; production/shared environments are off-limits.
+- Verification: required build/lint/type/test commands; affected UI flows and browser/simulator/emulator targets; test accounts per role; enabled API-token method; auth blockers. Keep saved instructions agent-neutral, including carried-over wording. Include cleanup before commit/push, respecting evidence-retention rules.
+- Tests: write/run/leave-alone policy, all/single-test commands, dependencies, fixtures, naming/mocking conventions, and slow/flaky exceptions. Follow existing conventions; do not invent coverage targets.
 
-Extract commands, working directories, dependency order, readiness checks, ports, test conventions, and auth requirements. Distinguish repo evidence from guesses; never print secrets while inspecting config.
+## Save and optionally verify
 
-## 2. Draft and confirm
+After confirmation, remove confirmed assumption labels and replace only the marked block, preserving other content. Create `AGENTS.md` if absent. Move a legacy marked block from `CLAUDE.md`; offer `@AGENTS.md` there if it is not imported.
 
-Fill the template with actual commands and evidence. Omit rows that do not apply. Mark reasonable proposed defaults *(assumed)* and unknown commands or credentials as unresolved rather than inventing them.
+Reference existing credential locations. Store newly supplied local/dev/staging test credentials only in `.agents/test-accounts.md` after verifying it is untracked and ignored. Add a local `info/exclude` entry if needed and report it; otherwise record the blocker. Never save passwords in `AGENTS.md` or use personal/production accounts.
 
-- **Running the app:** service ownership (agent or user/IDE), prerequisites, startup/readiness/stop commands, migrations, seed/reset procedures, and off-limits actions. Separate data-preserving stops from resets. Proposed default: the agent starts local services in dependency order; production and shared environments are off-limits.
-- **Verifying changes:** exact required build/lint/type/test checks, the cleanup rule for leftover and temporary files before committing or pushing (always included; add repo-specific temp locations), when UI verification applies, what to exercise and where (browser URL, simulator, emulator), auth/roles, API token method, and login blockers. Keep it agent-neutral: developers use different coding agents, so never name the current agent, app, or its tool names (write "a browser", not a specific agent's preview or browser tools), and remove such wording carried over from an existing setup. Confirm that any proposed token grant is enabled in the app's config.
-- **Tests:** kinds to write/run/leave alone, all-tests and single-test commands, dependencies, fixtures/mocking/naming conventions, and slow/flaky-suite exceptions. Proposed default: follow existing test styles and run required existing checks; do not invent coverage targets.
-
-For authenticated flows, reference existing test accounts or ask for missing accounts per relevant role. Use local/dev/staging test accounts, not personal or production credentials. Missing accounts may remain an explicit verification blocker; do not claim login is verified.
-
-## 3. Save
-
-After confirmation, remove confirmed *(assumed)* labels and write only the marked block, preserving the rest of `AGENTS.md`. Create the file if absent. Move an older marked setup from `CLAUDE.md` if present; offer `@AGENTS.md` there if it does not already import it.
-
-Reference existing credential locations. For newly supplied credentials, use the local-only account-file format in the template. Before writing secrets, verify `.agents/test-accounts.md` is ignored (add it to the common git directory's `info/exclude` if necessary) and not tracked. If that cannot be ensured, do not write secrets; record the blocker. Never put passwords in the setup block. Report any exclusion added and that teammates need their own account file.
-
-## 4. Verify when requested
-
-Offer a trial run unless already requested. Start or check services in order, exercise the documented login/token flow for each available role, run one test per selected kind, and run required done checks. Correct commands disproved by the trial; report changes. Mark checks not performed or blocked as *(unverified)*.
-
-Leave services running unless stopping is requested. End with the saved path, what is covered, and any unresolved or unverified items.
+Offer a trial unless already requested. When requested, check startup, login/token flows per available role, one test per chosen kind, and required checks. Correct disproved commands and mark unperformed/blocked checks *(unverified)*. Leave services running unless stopping was requested. Report the saved path and unresolved items.

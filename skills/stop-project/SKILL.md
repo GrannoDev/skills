@@ -1,34 +1,19 @@
 ---
 name: stop-project
-description: Stop project services from the saved setup in reverse order, preserving data. Run only when invoked by name.
+description: Stop saved project services in reverse order after verifying process ownership, preserving data. Run only when invoked by name.
 argument-hint: "[service...] [-y]"
 disable-model-invocation: true
 ---
 
-# Stop Project
+# Stop project
 
-Read the marked `setup-project` block in root `AGENTS.md` (legacy fallback: `CLAUDE.md`) and `.agents/run/` records. If the setup is absent, stop and suggest `/setup-project`. Follow its off-limits rules. Never remove volumes, reset data, or stop services outside this project's setup.
+Read the marked setup block in root `AGENTS.md`, with `CLAUDE.md` fallback, and `.agents/run/` records. If setup is absent, suggest `/setup-project` and stop. Never remove volumes, reset data, or stop unrelated services.
 
-## Scope and authorization
+1. Select all listed services or only named ones, accepting unambiguous aliases. Clarify unknown names. Stop in reverse startup order.
+2. Managed processes and project-scoped container stops are authorized by invocation. Confirm externally started services unless `-y` or prior authorization covers them.
+3. Check state. For explicit stop commands, verify project scope and data preservation. Replace destructive commands with known data-preserving equivalents; otherwise leave running.
+4. Before signaling, match recorded PID, command, cwd, and OS start identity. Use manager handles when present. Missing/stale/PID-only records mean externally started; inspect listener ownership. Processes outside this repo remain untouched, even with `-y`.
+5. Send TERM to verified processes and verified descendants; wait up to 20 seconds. Recheck identity before KILL and report forced stops.
+6. Verify containers stopped or ports freed. Remove PID/identity records only when the process is gone; retain logs. Report unselected services separately.
 
-Stop all listed services by default, or only the named ones, in reverse startup order. Accept unambiguous aliases; ask about unmatched or ambiguous names. Managed processes and project-scoped container stop commands are covered by this invocation. Confirm before stopping a service started externally (for example an IDE debug session), unless `-y` or an earlier instruction already authorizes it.
-
-## Workflow
-
-1. Check each service's container state or port. If not running, report it and remove only runtime records whose process is gone.
-2. For containers or services with explicit stop commands, verify the command targets this project and preserves data. Replace a documented destructive stop with its data-preserving equivalent; if none is known, leave it running and explain.
-3. For Ctrl+C services, compare `<service>.pid` and `<service>.json` with the live command, working directory, and OS start identity. Treat missing/stale/unverifiable records (including older PID-only records) as externally started. Locate its listener and check ownership; leave processes outside this repo alone regardless of `-y`. Use a recorded process-manager handle when applicable.
-4. Send TERM to the verified process and its verified descendants. Wait up to 20 seconds. If still running, recheck identity before sending KILL to those same project processes; report forced stops.
-5. Verify the selected containers stopped or ports were freed. Delete PID/identity records only once the process is gone; keep logs. Report unselected services as outside this run's scope.
-
-## Output
-
-```markdown
-| Service | Status | Detail |
-| --- | --- | --- |
-| <name> | <status> | <reason if forced, left running, or failed> |
-
-Data is kept. Start with /start-project.
-```
-
-Statuses: `stopped`, `stopped (forced)`, `not running`, `left running`, `failed`. Include a project-scoped manual stop command for failures when known.
+Report `Service | Status | Detail`, preserved data, and `/start-project`. Statuses are `stopped`, `stopped (forced)`, `not running`, `left running`, `failed`. Include a known project-scoped manual command for failures.

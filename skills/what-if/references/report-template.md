@@ -1,37 +1,28 @@
 # What-if output
 
-Use this question during the interview:
+Interview question:
 
 ```text
-What if <concrete scenario>?
-Right now: <behavior, file:line; or Cannot determine.>
-Test coverage: <test name and whether run, or None.>
+What if <scenario>?
+Right now: <behavior, file:line; or unknown>
+Coverage: <test and whether run; or None>
 What should happen?
 ```
 
-Use this ledger for progress and the final report. Count each case once. Preserve assumptions in Expected and uncertainty in Now; do not present them as confirmed defects.
+Progress and final report:
 
 ```markdown
-## What if: <feature>
+# What if: <feature>
+<Case counts by status>
 
-<n> cases: <n> ✅, <n> 🟡, <n> 🔴, <n> 🔵, <n> ⚪, <n> ❓
-
-| # | What if… | Expected (source) | Now (evidence) | Status |
+| # | Scenario | Expected, source | Current behavior, evidence | Status |
 | --- | --- | --- | --- | --- |
-| <id> | <scenario> | <behavior; user/docs/test/assumed> | <behavior; file:line or unknown> | <status> |
+| <id> | <case> | <user/docs/test/assumed> | <file:line or unknown> | <status> |
 
-### Bugs
-- #<id>: <mismatch and required behavior; suggest /use-tdd>
-
-### Tests to write
-**<file or suite>**
-- #<id>: <scenario → expected behavior>
-
-### Manual checks
-- #<id>: <steps and observable pass condition>
-
-### Open questions
-- #<id>: <missing requirement or evidence needed>
+Bugs: <case IDs, mismatch, /use-tdd suggestions>
+Tests to write: <file/suite, case IDs, scenario and expected result>
+Manual checks: <case IDs, steps, pass condition>
+Open questions: <missing requirement/evidence>
 ```
 
-Empty sections say `None.`. In quick mode, begin with “Check assumed expectations and Open cases first.” Include known bugs needing regression coverage in Tests to write alongside Untested cases.
+Empty sections say `None.`. Include Bug and Untested cases in proposed tests. Preserve uncertainty; quick mode starts with "Check assumed expectations and Open cases first."
