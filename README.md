@@ -25,7 +25,7 @@ npx skills add GrannoDev/skills --skill <name>
 | [bug-hunter](skills/bug-hunter/SKILL.md) | Reproduces feature bugs across UI, APIs and stored state using controlled test data, then verifies requested fixes with evidence. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
-| [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Saves structured before-and-after evidence, readable UI videos, reproducible checks, and a concise Why / How report. |
+| [evidence-based-verification](skills/evidence-based-verification/SKILL.md) | Verifies behavior with focused checks, saves only videos or images, and summarizes results in chat. |
 | [setup-project](skills/setup-project/SKILL.md) | Confirms startup, verification, test commands, and auth setup, then saves them in AGENTS.md. |
 | [start-project](skills/start-project/SKILL.md) | Starts the project's services in order from the `/setup-project` setup, waits until each is ready, and reports URLs and logs. |
 | [stop-project](skills/stop-project/SKILL.md) | Stops selected project services in reverse order, verifies process ownership and keeps data. |
@@ -57,7 +57,7 @@ Keep instructions short and specific: exact inputs, actions, outputs, and failur
 | Edge-case ledger and test plan | [What-if report](skills/what-if/references/report-template.md) |
 | Reproduced UI bugs | [UI bug report](skills/break-ui/references/report-template.md) |
 | Cross-layer bug hunt | [Bug hunt report](skills/bug-hunter/references/report-template.md) |
-| Before-and-after verification | [Evidence report](skills/evidence-based-verification/references/report-template.md) |
+| Before-and-after verification | [Chat summary](skills/evidence-based-verification/references/report-template.md) |
 | Change summary and commit message | [Commit output](skills/commit/references/commit-template.md) |
 
 When revising a skill, check its default mode, each flag and its resume/failure path. Preserve invocation policy and authorization boundaries. A template makes the output shape repeatable; evidence requirements and explicit decision rules make its content more reliable.

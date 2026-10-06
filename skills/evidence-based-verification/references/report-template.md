@@ -1,23 +1,14 @@
-# Evidence report
+# Chat summary
 
-Use relative artifact links. Include only applicable fields and files that exist.
+Use this format in the final chat response. Do not create a report file. Keep it brief and omit fields that do not apply. Use accessible media links or absolute local paths.
 
-```markdown
-# Evidence: <task>
-
+```text
 Changed: <resulting behavior>
 Why: <user impact>
 How: <key implementation change>
-Context: <before/after revisions and relevant uncommitted state; environment, fixtures, capture settings>
-
-| Scenario | Expected | Before observed | After observed | Status | Evidence |
-| --- | --- | --- | --- | --- | --- |
-| S01: <trigger> | <requirement and source> | <actual result> | <actual result> | <PASS / FAIL / BLOCKED / NOT RUN> | <links and timestamps> |
-
-Reproduce: <working directory, exact commands or steps, inputs, assertions, reset procedure>
-Checks: <commands, exit codes, observed results, saved output links>
-Visual quality: <what was inspected and whether it is readable; omit for non-UI>
-Limitations: <missing baseline, capture gaps, blocked or untested behavior; None if fully verified>
+Evidence: <video or image links, observed behavior, useful timestamps; omit if none>
+Checks: <focused commands or steps and observed results, including relevant exit codes>
+Limitations: <missing baseline, capture gaps, or unverified behavior; omit if none>
 ```
 
-Repeat scenario-specific reproduction details when needed. `PASS` requires an observed expected result; supporting checks may pass both before and after. Mark verification incomplete when a required claim lacks evidence.
+Distinguish observed results from expectations. Report incomplete verification directly. Never claim a capture, check, or successful outcome that did not occur.
