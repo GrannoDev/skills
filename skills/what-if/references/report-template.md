@@ -19,7 +19,7 @@ Progress and final report:
 | --- | --- | --- | --- | --- |
 | <id> | <case> | <user/docs/test/assumed> | <file:line or unknown> | <status> |
 
-Bugs: <case IDs, mismatch, /use-tdd suggestions>
+Bugs: <case IDs, mismatch>
 Tests to write: <file/suite, case IDs, scenario and expected result>
 Manual checks: <case IDs, steps, pass condition>
 Open questions: <missing requirement/evidence>

@@ -26,4 +26,4 @@ Default: confirm the feature contract, ask one "What if?" at a time, and update 
 | Open | Requirement/behavior unresolved, including assumption-only suspicions |
 | Manual | Established expectation needs manual checking; no known contradiction |
 
-Assign each case once. Incorrect behavior is Bug even when checked manually. Never claim unrun tests passed. End with the plan and relevant `/use-tdd` suggestions; offer implementation only if not already requested.
+Assign each case once. Incorrect behavior is Bug even when checked manually. Never claim unrun tests passed. End with the plan; offer implementation only if not already requested.
