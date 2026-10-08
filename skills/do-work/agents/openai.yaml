@@ -1,0 +1,4 @@
+interface:
+  display_name: "Do work"
+  short_description: "Explore, approve a concise plan, implement, and demo"
+  default_prompt: "Use $do-work to investigate this bug fix or feature, present the fixed plan for my approval, then implement and demonstrate it."
