@@ -15,8 +15,8 @@ Keep the four rows in this order and use `Not applicable` only when the requirem
 
 [For non-UI work: insert concise before/after pseudocode or new-feature pseudocode, with actual implementation links and observed input/output. Omit this block for UI-only work.]
 
-[Only necessary access/setup instructions, runtime lifetime, or a known link expiration.]
+[Only necessary access/setup instructions, including Tailscale membership or Cloudflare Access when used, runtime/tunnel lifetime, and a known link expiration.]
 
-[Try it](<verified runnable URL>)
+[Try it](<verified user-reachable runnable URL>)
 
 Replace all placeholders. When the try-it requirement is blocked, replace the final link with the reason, exact reproduction command, and linked example. Do not label a fallback file link as a working demo.

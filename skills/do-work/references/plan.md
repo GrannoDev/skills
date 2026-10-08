@@ -14,7 +14,7 @@ Use this for every feature and any bug that does not meet the small-bug criteria
 | Implementation | [2-4 ordered steps with actual file links. Include caller migrations and removal of obsolete paths when applicable.] |
 | Trade-offs | [Chosen approach, its main cost, and the relevant alternative rejected with a reason. Use None when there is no meaningful choice.] |
 | Verification | [Concrete expected behavior, reproduction/acceptance checks, and relevant regressions. Name any blocker or assumption.] |
-| Delivery | [Required before/after evidence or feature demo; proposed runtime and entry point for the try-it link. Disclose capture/runtime limitations.] |
+| Delivery | [Required evidence or feature demo; runtime and try-it entry point. For a remote box, name Tailscale or Cloudflare Tunnel and access requirements. Disclose limitations.] |
 
 Approve this plan?
 

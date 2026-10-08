@@ -29,7 +29,7 @@ On feedback, revise the same template. On confirmation, carry out the approved p
 
 The main agent implements the work. Preserve unrelated changes and follow established repository patterns. Check each substantial unit before building on it. Verify the actual changed behavior against the plan's acceptance criteria and run the relevant regression checks. Record failures, skipped checks, and remaining unknowns.
 
-Capture after evidence and prepare the working demo using [delivery requirements](references/delivery.md). Before finishing, open the try-it link and exercise the intended flow. Keep its runtime available for the user. Resume interrupted work from the approved plan and existing artifacts; recapture evidence only when stale. If the original baseline is lost, report it instead of labeling the changed state as before.
+Capture after evidence and prepare the working demo using [delivery requirements](references/delivery.md). On a remote box, expose it through Tailscale or a Cloudflare Tunnel using [remote demo setup](references/remote-demo.md). Before finishing, open the user-reachable try-it link and exercise the intended flow. Keep its runtime and tunnel available for the user. Resume interrupted work from the approved plan and existing artifacts; recapture evidence only when stale. If the original baseline is lost, report it instead of labeling the changed state as before.
 
 ## 4. Deliver
 

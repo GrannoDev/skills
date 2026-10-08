@@ -10,7 +10,7 @@ Use only for a reproduced bug with a local fix in one domain, no contract change
 | --- | --- |
 | Cause | [Trigger and why the current code fails, with a link to the responsible file/line.] |
 | Fix | [The minimal change and affected domain, with a file link.] |
-| Verification and delivery | [Concrete expected result and targeted check; required before/after evidence and intended try-it entry point.] |
+| Verification and delivery | [Concrete expected result and targeted check; required before/after evidence and try-it entry point. For a remote box, name Tailscale or Cloudflare Tunnel.] |
 
 Approve this fix?
 
