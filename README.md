@@ -20,6 +20,7 @@ npx skills add GrannoDev/skills --skill <name>
 | --- | --- |
 | [break-ui](skills/break-ui/SKILL.md) | Exercises a UI in a browser, simulator or emulator and reports ranked, reproduced bugs; delegates when available. |
 | [ca-release](skills/ca-release/SKILL.md) | Releases a Climbalong app: merges into main/master, bumps and tags the version, pushes, and merges back into develop and pushes it. |
+| [climb](skills/climb/SKILL.md) | Implements a Jira ticket or work description and delivers a testable result. |
 | [commit](skills/commit/SKILL.md) | Reviews changes, proposes a conventional commit message and commits the authorized scope. |
 | [what-if](skills/what-if/SKILL.md) | Walks through a feature's edge cases one question at a time and ends with a test plan. |
 
@@ -44,6 +45,7 @@ Keep instructions short and specific: exact inputs, actions, outputs, and failur
 | --- | --- |
 | Edge-case ledger and test plan | [What-if report](skills/what-if/references/report-template.md) |
 | Reproduced UI bugs | [UI bug report](skills/break-ui/references/report-template.md) |
+| Implementation handback | [Climb handback](skills/climb/references/handback.md) |
 | Change summary and commit message | [Commit output](skills/commit/references/commit-template.md) |
 
 When revising a skill, check its default mode, each flag and its resume/failure path. Preserve invocation policy and authorization boundaries. A template makes the output shape repeatable; evidence requirements and explicit decision rules make its content more reliable.
